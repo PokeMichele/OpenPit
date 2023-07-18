@@ -1,0 +1,33 @@
+main: me.ilsommo.openpit.ThePit
+version: 1.0
+author: Il Sommo
+name: OpenPit
+softdepend: [PlaceholderAPI, ServersNPC]
+commands:
+  protect:
+    description: Protects the spawn region after selecting with gold axe.
+    usage: /protect
+  setgold:
+    description: Type /setgold to set locations to spawn gold
+    usage: /setgold
+  perks:
+    description: Perks and upgrades
+    usage: /perks
+  openpit:
+    description: Help menu
+    usage: /openpit
+  setkillstats:
+    description: Track players dubs 
+    usage: /setkillstats
+  setdeathstats:
+    description: Track players dubs 
+    usage: /setdeathstats
+  respawn:
+    description: respawns the player when they took too many L's
+    usage: /respawn
+  gold:
+    description: Use "/gold setloc" to set the Gold Spawn Location 
+    usage: /gold
+  levelup:
+    description: Add a level to a player
+    usage: /levelup
