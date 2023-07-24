@@ -30,17 +30,18 @@ public class Methods {
 	private FileConfiguration config;
 	public ArrayList<Player> combatlog = new ArrayList<Player>();
 	private Messages messages;
-	public ExtraConfigs data = new ExtraConfigs(main, "data.yml");
-	private String b = ("playerData");
-    public boolean event;
-    public HashMap<Player, HashMap<Integer, String>> perk1 = new HashMap<Player, HashMap<Integer, String>>();
-    public HashMap<UUID, Integer> dataSlot = new HashMap<UUID, Integer>();
+    public ExtraConfigs data = new ExtraConfigs(main, "data.yml");
 
-	public Methods(ThePit main){
-	  this.main = main;
-	  this.messages = main.getMessages();
-	  this.config = main.getConfig();
-	}
+    private String b = "playerData";
+    public boolean event;
+    public HashMap<Player, HashMap<Integer, String>> perk1 = new HashMap<>();
+    public HashMap<UUID, Integer> dataSlot = new HashMap<>();
+
+    public Methods(ThePit main) {
+        this.main = main;
+        this.messages = main.getMessages();
+        this.config = main.getConfig();
+    }
 	 /*
 	 * @param  p  the player to check their combat tag 
 	 */
@@ -97,25 +98,20 @@ public class Methods {
 		return str;
 	}
 	public int getPrestige(Player p) {
-		if (config.get("Data." + p.getName()) == null) {
-			return 0;
-		}
-		int check = config.getInt("Data." + p.getName());
-		switch(check) {
-		case 1:
-			return 1;
-		case 2:
-			return 2;
-		case 3:
-			return 3;
-		default:
-			return 4;
-		}
+	    int prestige = 0;
+	    if (config.contains("Data." + p.getName())) {
+	        prestige = config.getInt("Data." + p.getName());
+	    }
+
+	    // Logging per verificare quale valore di prestigio viene restituito
+	    Bukkit.getLogger().info("Player " + p.getName() + " has prestige level: " + prestige);
+
+	    return prestige;
 	}
 	public String getChatLevel(Player p) {
 		if (getPrestige(p) >= 4) {
-			return (ChatColor.AQUA + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.AQUA + "]");
-		}
+	        return (ChatColor.AQUA + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.AQUA + "]");
+	    }
 		switch(getPrestige(p)) {
 		case 1:
 			return (ChatColor.BLUE + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.BLUE + "]");
@@ -277,29 +273,30 @@ public class Methods {
 		}
 
 		public void setGold(Player p, int amount) {
-			if (amount > 999999999) {
-				p.sendMessage(ChatColor.RED + "MAXIMUM AMOUNT IS 999,999,999");
-				return;
-			}
-			UUID uuid = p.getUniqueId();
-			data.set(b + "." + uuid + ".gold", Integer.valueOf(getGold(p) + amount));
-			data.set(b + "." + uuid + ".name", p.getName());
-			data.save();
-		}
+	        if (amount > 999999999) {
+	            p.sendMessage(ChatColor.RED + "MAXIMUM AMOUNT IS 999,999,999");
+	            return;
+	        }
+	        
+	        UUID playerUUID = p.getUniqueId();
+	        ThePit.getInstance().getGoldManager().addGold(playerUUID, amount);
+	    }
 
-		public boolean removeGold(Player p, int amount) {
-			UUID uuid = p.getUniqueId();
-			if (getGold(p) - amount < 0) {
-				p.sendMessage(ChatColor.RED + "Not enough gold.");
-				return false;
-			}
-			data.set(b + "." +  uuid + ".gold", Integer.valueOf(getGold(p) - amount));
-			data.save();
-			return true;
-		}
+	    public boolean removeGold(Player p, int amount) {
+	        UUID playerUUID = p.getUniqueId();
+	        int currentGold = ThePit.getInstance().getGoldManager().getGold(playerUUID);
+	        
+	        if (currentGold - amount < 0) {
+	            p.sendMessage(ChatColor.RED + "Not enough gold.");
+	            return false;
+	        }
+	        
+	        ThePit.getInstance().getGoldManager().addGold(playerUUID, -amount);
+	        return true;
+	    }
 
-		public int getGold(Player p) {
-			UUID uuid = p.getUniqueId();
-			return data.getInt(b + "." +  uuid + ".gold");
-		}
+	    public int getGold(Player p) {
+	        UUID playerUUID = p.getUniqueId();
+	        return ThePit.getInstance().getGoldManager().getGold(playerUUID);
+	    }
 }

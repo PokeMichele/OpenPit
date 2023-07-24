@@ -17,10 +17,11 @@ import me.ilsommo.openpit.gui.perks.Perks;
 import me.ilsommo.openpit.gui.perks.PerksMainMenu;
 import me.ilsommo.openpit.gui.shop.Shop;
 import me.ilsommo.openpit.packets.PacketUtil;
-import me.ilsommo.openpit.scoreboard.ScoreboardManager;
 import me.ilsommo.openpit.serverevents.ServerEventsRunnable;
 import me.ilsommo.openpit.utils.ArmorListener;
 import me.ilsommo.openpit.utils.ExtraConfigs;
+import me.ilsommo.openpit.utils.GoldManager;
+import me.ilsommo.openpit.utils.GoldPickupListener;
 import me.ilsommo.openpit.utils.Messages;
 import me.ilsommo.openpit.utils.Methods;
 
@@ -31,6 +32,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,6 +49,8 @@ public class ThePit extends JavaPlugin {
     public ExtraConfigs guis;
     public ExtraConfigs vaults;
     public static HashMap<String, CommandModule> commands;
+    private static ThePit instance;
+    private GoldManager goldManager;
 
     private PluginManager pm;
     private ConsoleCommandSender sender;
@@ -64,13 +68,17 @@ public class ThePit extends JavaPlugin {
         vaults = new ExtraConfigs(this, "vaults.yml", "vaults.yml");
 
         if (pm.isPluginEnabled("PlaceholderAPI")) {
-            new Placeholder(this).register();
+            new Placeholder(this).register(); // Pass 'this' as an argument to the constructor
             sender.sendMessage(ChatColor.GREEN + "PlaceholderAPI found, working with it.");
         } else {
             sender.sendMessage(ChatColor.RED + "PlaceholderAPI not found, working without it.");
         }
-
-        registerEvents();
+        
+        instance = this;
+        goldManager = new GoldManager();
+        methods = new Methods(this);
+        
+        registerEvents(); // Aggiungi questa linea per registrare gli eventi
         disableEntities();
 
         // Registra il tuo executor di comando per il comando /thepit
@@ -81,12 +89,21 @@ public class ThePit extends JavaPlugin {
 
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
-
         startEvents();
     }
 
     @Override
     public void onDisable() {
+    	// Salva i dati dell'oro nel file "gold.yml" quando il plugin viene disabilitato
+        goldManager.saveData();
+    }
+    
+    public static ThePit getInstance() {
+        return instance;
+    }
+    
+    public GoldManager getGoldManager() {
+        return goldManager;
     }
 
     // INSTANCES ---
@@ -132,10 +149,9 @@ public class ThePit extends JavaPlugin {
     }
 
     private void registerEvents() {
-        ScoreboardManager man = new ScoreboardManager();
-
         pm.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
         pm.registerEvents(new Perks(this), this);
+        pm.registerEvents(new GoldPickupListener(), this);
         this.methods = new Methods(this);
         this.messages = new Messages(this);
         this.packets = new PacketUtil(this);
@@ -150,6 +166,7 @@ public class ThePit extends JavaPlugin {
         new HealthBar(this);
         new PantsEnchants(this);
         new PlayerDamage(this);
+
         sender.sendMessage(ChatColor.GREEN + "Events Registered");
     }
 

@@ -134,7 +134,7 @@ public class PacketUtil1_9_R1 implements Listener {
      * This is the main method to change the players name.
      *
      * @param toSendTo   The player that you want to send the packet
-     * @param player     The player wich name will be changed
+     * @param player     The player which name will be changed
      * @param prefix     The prefix that the 'player' will have
      * @param suffix     The suffix that the 'player' will have
      * @param teamAction To CREATE, UPDATE, OR DESTROY the fake team

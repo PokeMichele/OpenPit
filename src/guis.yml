@@ -29,7 +29,7 @@ GUI:
     sword:
       Permission: 'falconseeker.hi' #Permission needed to click the item and equip the perk
       Material: 'DIAMOND_SWORD' #List of materials can be found here - INSERT LINK HERE FOR MATERIALS
-      Name: '&eDiamond' #The name of the item
+      Name: '&eDiamond Sword' #The name of the item
       Slot: 11 #Slot in which the item will appear in.
       Cost: 150
       Lore:
@@ -51,9 +51,19 @@ GUI:
       - '&eClick to purchase!'  
     three:
       Permission: 'falconseeker.hi'
+      Material: 'GOLDEN_APPLE'
+      Name: '&eGolden Apple'
+      Slot: 13
+      Cost: 100
+      Lore:
+      - '&7Lost on death.'
+      - '&7Cost: &6100g'
+      - '&eClick to purchase!'  
+    four:
+      Permission: 'falconseeker.hi'
       Material: 'DIAMOND_CHESTPLATE'
       Name: '&eDiamond Chestplate'
-      Slot: 16
+      Slot: 14
       Cost: 500
       Lore:
       - '&7Auto-Equips on buy.'
@@ -61,11 +71,11 @@ GUI:
       - '&7Lost on death.'
       - '&7Cost: &6500g'
       - '&eClick to purchase!'  
-    four:
+    five:
       Permission: 'falconseeker.hi'
       Material: 'DIAMOND_BOOTS'
       Name: '&eDiamond Boots'
-      Slot: 17
+      Slot: 15
       Cost: 300
       Lore:
       - '&7Auto-Equips on buy.'

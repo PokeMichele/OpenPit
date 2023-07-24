@@ -58,7 +58,6 @@ public class Shop implements Listener, CommandExecutor {
 		  }
 		  
 		  p.openInventory(inv);
-
 	  }
 
 	public void openInventory(Player p) {
@@ -89,18 +88,18 @@ public class Shop implements Listener, CommandExecutor {
 			return;
 		}
 		if (meta.getDisplayName().equals(ChatColor.YELLOW + "Obsidian")) {
-			if (econ.getGold(p) >= 40) {
+			if (econ.getGold(p) >= 50) {
 				p.sendMessage(ChatColor.GREEN + "You bought obsidian");
-				econ.removeGold(p, 40);
+				econ.removeGold(p, 50);
 				p.getPlayer().getInventory().addItem(new ItemStack(Material.OBSIDIAN, 8));
 				return;
 			}
 			p.sendMessage(ChatColor.RED + "Not enough money");
 		}
 		if (meta.getDisplayName().equals(ChatColor.YELLOW + "Diamond Chestplate")) {
-			if (econ.getGold(p) >= 250) {
+			if (econ.getGold(p) >= 500) {
 				p.sendMessage(ChatColor.GREEN + "You bought a diamond chestplate");
-				econ.removeGold(p, 250);
+				econ.removeGold(p, 500);
 				p.getPlayer().getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
 
 				return;
@@ -118,9 +117,9 @@ public class Shop implements Listener, CommandExecutor {
 			p.sendMessage(ChatColor.RED + "Not enough money");
 		}
 		if (meta.getDisplayName().equals(ChatColor.YELLOW + "Golden Apple")) {
-			if (econ.getGold(p) >= main.getConfig().getInt("Apple")) {
+			if (econ.getGold(p) >= 100) {
 				p.sendMessage(ChatColor.GREEN + "You bought a golden apple");
-				econ.removeGold(p, main.getConfig().getInt("Apple"));
+				econ.removeGold(p, 100);
 				p.getPlayer().getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
 
 				return;
@@ -128,19 +127,37 @@ public class Shop implements Listener, CommandExecutor {
 			p.sendMessage(ChatColor.RED + "Not enough money");
 		}
 		if (meta.getDisplayName().equals(ChatColor.YELLOW + "Diamond Sword")) {
-			if (econ.getGold(p) >= 100) {
+			if (econ.getGold(p) >= 150) {
 				p.sendMessage(ChatColor.GREEN + "You bought a diamond sword");
-				econ.removeGold(p, 100);
-				p.getPlayer().getInventory().setItem(0, new ItemStack(Material.DIAMOND_SWORD, 1));
+				econ.removeGold(p, 150);
+				// Ottieni l'inventario del giocatore
+		        ItemStack[] inventory = p.getInventory().getContents();
+		        // Scansiona gli slot dell'inventario
+		        for (int i = 0; i < inventory.length; i++) {
+		            ItemStack item = inventory[i];
+		            if (item != null && item.getType() == Material.DIAMOND_SWORD) {
+		                return;
+		            } else if (item != null && item.getType().name().endsWith("_SWORD")) {
+		                p.getInventory().setItem(i, new ItemStack(Material.DIAMOND_SWORD, 1));
+		                return; 
+		            }
+		        }
+		        // Se non è stata trovata una spada diversa, aggiungi la "Diamond Sword" nell'inventario (solo se ci sono slot disponibili)
+		        for (int i = 0; i < inventory.length; i++) {
+		            if (inventory[i] == null) {
+		                p.getInventory().setItem(i, new ItemStack(Material.DIAMOND_SWORD, 1));
+		                return; 
+		            }
+		        }
 
 				return;
 			}
 			p.sendMessage(ChatColor.RED + "Not enough money");
 		}
 		if (meta.getDisplayName().equals(ChatColor.YELLOW + "Diamond Boots")) {
-			if (econ.getGold(p) >= 150) {
+			if (econ.getGold(p) >= 300) {
 				p.sendMessage(ChatColor.GREEN + "You bought diamond boots");
-				econ.removeGold(p, 150);
+				econ.removeGold(p, 300);
 				p.getPlayer().getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
 
 				return;
@@ -154,11 +171,6 @@ public class Shop implements Listener, CommandExecutor {
 		if ((commandLabel.equalsIgnoreCase("shop"))) {
 			openInventory(player);
 			return true;
-		}
-		if (commandLabel.equalsIgnoreCase("setshop")){
-			player.getWorld().spawnEntity(player.getLocation(), EntityType.VILLAGER);
-			player.sendMessage(ChatColor.GREEN + "Villager Spawned");
-			
 		}
 		return true;
 	}
