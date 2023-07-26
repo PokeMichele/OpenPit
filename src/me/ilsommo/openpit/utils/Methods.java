@@ -70,59 +70,6 @@ public class Methods {
 		}
 		else return;
 	}
-	public String levelColor(Player p) { //TODO: EDIT ALL THE IF STATEMENTS - LOOKS CLUTTERED
-		String str = null;
-		String level = String.valueOf(p.getLevel());
-		int levels = p.getLevel();
-		if (levels >= 0 && levels < 10) {
-			return str = (ChatColor.GRAY + level);
-		}
-		if (levels >= 10 && levels < 20) {
-			return str = (ChatColor.RED + level);
-		}
-		if (levels >= 20 && levels < 30) {
-			return str = (ChatColor.AQUA + level);
-		}
-		if (levels >= 30 && levels < 40) {
-			return str = (ChatColor.DARK_AQUA + level);
-		}
-		if (levels >= 40 && levels < 50) {
-			return str = (ChatColor.LIGHT_PURPLE + level);
-		}
-		if (levels >= 50 && levels < 60) {
-			return str = (ChatColor.GREEN + level);
-		}
-		if (levels >= 60) {
-			return str = (ChatColor.WHITE + level); 
-		}
-		return str;
-	}
-	public int getPrestige(Player p) {
-	    int prestige = 0;
-	    if (config.contains("Data." + p.getName())) {
-	        prestige = config.getInt("Data." + p.getName());
-	    }
-
-	    // Logging per verificare quale valore di prestigio viene restituito
-	    Bukkit.getLogger().info("Player " + p.getName() + " has prestige level: " + prestige);
-
-	    return prestige;
-	}
-	public String getChatLevel(Player p) {
-		if (getPrestige(p) >= 4) {
-	        return (ChatColor.AQUA + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.AQUA + "]");
-	    }
-		switch(getPrestige(p)) {
-		case 1:
-			return (ChatColor.BLUE + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.BLUE + "]");
-		case 2:
-			return (ChatColor.WHITE + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.WHITE + "]");
-		case 3:
-			return (ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.DARK_GRAY + "]");
-		default:
-			return (ChatColor.GRAY + "[" + ChatColor.GRAY + levelColor(p) + ChatColor.GRAY + "]");
-		}
-	}
 	public ItemStack createGuiItem(String name, ArrayList<String> desc, Material material) {
 		ItemStack i = new ItemStack(material, 1);
 		ItemMeta iMeta = i.getItemMeta();
@@ -139,7 +86,6 @@ public class Methods {
 		i.setItemMeta(iMeta);	
 		return i;		
 	}
-	@SuppressWarnings("deprecation")
 	public String place(String string, Player p) {
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceHolderAPI")) {
 			return PlaceholderAPI.setPlaceholders(p, string);
@@ -149,10 +95,8 @@ public class Methods {
 	    String date = format.format(now);
 		return ChatColor.translateAlternateColorCodes('&', string
 				.replace("%thepit_name%", p.getName())
-				.replace("%thepit_level%", getChatLevel(p))
 				.replace("%thepit_stat%", getCombat(p))
 				.replace("%thepit_date%", date)
-				.replace("%thepit_xp%", String.valueOf(p.getExpToLevel()))
 				.replace("%thepit_gold%", String.valueOf(getGold(p))));
 	}
 
@@ -175,10 +119,8 @@ public class Methods {
 	    String date = format.format(now);
 		return ChatColor.translateAlternateColorCodes('&', string
 				.replace("%thepit_name%", p.getName())
-				.replace("%thepit_level%", getChatLevel(p))
 				.replace("%thepit_stat%", getCombat(p))
 				.replace("%thepit_date%", date)
-				.replace("%thepit_xp%", String.valueOf(p.getExpToLevel()))
 				.replace("%thepit_gold%", String.valueOf(getGold(p))));	
 		}
 	public void createHolo(String nextTop, Integer nextTopKills, Location location) {
@@ -277,10 +219,9 @@ public class Methods {
 	            p.sendMessage(ChatColor.RED + "MAXIMUM AMOUNT IS 999,999,999");
 	            return;
 	        }
-	        
 	        UUID playerUUID = p.getUniqueId();
 	        ThePit.getInstance().getGoldManager().addGold(playerUUID, amount);
-	    }
+	    } 
 
 	    public boolean removeGold(Player p, int amount) {
 	        UUID playerUUID = p.getUniqueId();

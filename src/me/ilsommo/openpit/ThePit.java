@@ -45,6 +45,7 @@ public class ThePit extends JavaPlugin {
     private PacketUtil packets;
     private Streaks streaks;
     private PerksMainMenu perks;
+    private Perks perks2;
     private Shop shop;
     public ExtraConfigs guis;
     public ExtraConfigs vaults;
@@ -125,6 +126,10 @@ public class ThePit extends JavaPlugin {
 
     public PerksMainMenu getPerks() {
         return this.perks;
+    }
+    
+    public Perks getPerks2() {
+        return this.perks2;
     }
 
     public Shop getShop() {

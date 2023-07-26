@@ -214,15 +214,6 @@ public class Commands implements CommandExecutor {
 		sender.sendMessage("===========[Top]===========");
 					return true;
 				}
-				if (args[0].equalsIgnoreCase("levelup")) {
-					if (!p.hasPermission("falconseeker.levelup")) {
-						p.sendMessage(methods.place(messages.noperms, p));
-						return true;
-					}
-					p.setLevel(p.getLevel() + 1);
-
-					return true;
-				}
 				if (args[0].equalsIgnoreCase("help")) {
 					for (String s : messages.help) {
 					p.sendMessage(methods.place(s, p));

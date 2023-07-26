@@ -3,9 +3,7 @@
 # * This plugin requires PlaceholderAPI and ZNPCs, but will work without them.
 #
 # PLACEHOLDERS:
-#        %thepit_nam e% - displays the player's name
-#        %thepit_level% - shows the play's level with prestige
-#        %thepit_xp% - the amount of xp until the player reaches the next level
+#        %thepit_name% - displays the player's name
 #        %thepit_stat% - returns wether or not the player is in combat.
 #        %thepit_date% - returns the current date in the format day/month/year
 #        %thepit_gold% - shows how much currency the player has (NOT VAULT SUPPORTED)
@@ -35,23 +33,6 @@ Titles:
   Levelup-Title: '&b&lLEVEL UP!' #Title shown when a player's level upgrades
 Levels:
   Exp: 16
-#Flickerless scoreboard options. Title is the first line, footer is the last. Refresh rate is how fast the 
-#nametags AND scoreboard refresh.
-Scoreboard:
-  footer: '&ewww.sommomc.net' #Bottom-most line of the scoreboard
-  title: '&e&lSommoMC - THE PIT' #Upper most line of the scoreboard
-  scores:
-  - '&7%thepit_date%'
-  - ' '
-  - '&fLevel: &7%thepit_level%'
-  - 'NeededXP: &b%thepit_xp%'
-  - ' '
-  - 'Gold: &6%thepit_gold%'
-  - ' '
-  - 'Status: %thepit_stat%'
-  - ' '
-  RefreshRate: '1' #How fast in seconds the scoreboard reloads
-  
 #Change the default chat format. Set Enabled to false if you have another custom plugin such as EssentialsChat
 #which modifies the chat.
 ChatFormat:
@@ -69,7 +50,7 @@ Messages:
   EventLog: '&6Event' # Shown on scoreboard when an event is triggered
   Unknown: '&cUnknown Command. Type /openpit for help'
   Reload: '&aConfig reloaded.'
-  Levelup: '&aYou have leveled up to %thepit_level%.'
+  Levelup: '&aYou have leveled up.'
   Respawn: '&aYou have respawned.'
   NoPermission: '&cNo permission to use this command!'
   Help: #Not reccomended to change for future reference.
@@ -82,9 +63,8 @@ Messages:
     - '&c/openpit respawn - &7Teleports the player to spawn'
     - '&c/openpit perks - &7Display perks based on prestige.'
     - '&c/openpit perks - &7Display the Shop'
-    - '&c/openpit levelup - &7Gives the player +1 level.'
     - '&c/openpit stats - &7GUI of player statistics'
-    - '&c/openpit spawntiems <Player> <Amount> - &7Built in economy'
+    - '&c/openpit spawnshop <Player> <Amount> - &7Built in economy'
     - '&c/openpit spawnperks - &7Spawn Perks NPC'
     - '&c/openpit giveitem <Enchantment> &7Gives a mystic wells item with that enchantment'
     - '&c/gold setloc - &7Set Gold Spawn Location'

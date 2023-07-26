@@ -118,15 +118,17 @@ public class Perks
     case "Fishing Rod":
         remove(p);
         vampire.add(p);
-        p.sendMessage( ChatColor.GREEN + "You equipped the vampire perk");
+        HashMap<Integer, String> data3 = new HashMap<Integer, String>();
+        data3.put(main.getMethods().dataSlot.get(p.getUniqueId()), "FISHING_ROD");
+        main.getMethods().perk1.put(p, data3);
+        p.sendMessage( ChatColor.GREEN + "You equipped the Fishing Rod perk");
         return;
     case "Golden Head":
         HashMap<Integer, String> data = new HashMap<Integer, String>();
         data.put(slot, "GOLDEN_APPLE");
         remove(p);
         goldenhead.add(p);
-        p.sendMessage( ChatColor.GREEN + "You equipped GoldenHeads perkttt");
-
+        p.sendMessage( ChatColor.GREEN + "You equipped GoldenHeads perk");
         main.getMethods().perk1.put(p, data);
         return;
     case "Lava Bucket":
@@ -135,8 +137,14 @@ public class Perks
         HashMap<Integer, String> data2 = new HashMap<Integer, String>();
         data2.put(main.getMethods().dataSlot.get(p.getUniqueId()), "LAVA_BUCKET");
         main.getMethods().perk1.put(p, data2);
-        p.sendMessage( ChatColor.GREEN + "You equipped lavabucket perk");
-
+        p.sendMessage( ChatColor.GREEN + "You equipped Lava Bucket perk");
+        return;
+    case "Strength-Chaining":
+        remove(p);
+        HashMap<Integer, String> data4 = new HashMap<Integer, String>();
+        strength.add(p);
+        main.getMethods().perk1.put(p, data4);
+        p.sendMessage( ChatColor.GREEN + "You equipped Strength Chaining perk");
         return;
     case "Extra HP + 4":
         p.sendMessage( ChatColor.GREEN + "You equipped firestorm animation");
@@ -153,6 +161,10 @@ public class Perks
 		p.sendMessage( ChatColor.RED + "PERK NOT FOUND! ERROR");
     	break;
     }
+  }
+  
+  public boolean hasStrength(Player player) {
+      return strength.contains(player);
   }
   
   public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
@@ -173,7 +185,7 @@ public class Perks
 	  }
 	  Player p = (Player) e.getDamager();
 	  if (vampire.contains(p)) {
-		  p.setHealth(1 + p.getHealth());
+		  p.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
 	  }
   }
   public void remove(Player p) {
@@ -193,7 +205,6 @@ public class Perks
 	  }
 	  if (lava.contains(p)) {
 		  p.getInventory().addItem(new ItemStack(Material.LAVA_BUCKET));
-		  p.getInventory().addItem(new ItemStack(Material.OBSIDIAN, 4));
 		  p.updateInventory();
 
 		  return;

@@ -12,9 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.ilsommo.openpit.ThePit;
+import me.ilsommo.openpit.gui.perks.Perks;
 import me.ilsommo.openpit.packets.PacketUtil;
 import me.ilsommo.openpit.utils.Messages;
 
@@ -24,12 +27,14 @@ public class InstantDeath implements Listener {
 	private PacketUtil packets;
 	private FileConfiguration config;
 	private Messages messages;
+	private Perks perks2;
 	private HashMap<UUID, Integer> map = new HashMap<>();
 	
 	public InstantDeath(ThePit main) {
 		this.main = main;
 		this.messages = main.getMessages();
 		this.packets = main.getPackets();
+		this.perks2 = main.getPerks2();
 		this.config = main.getConfig();
 		Bukkit.getPluginManager().registerEvents(this, main);
 	}
@@ -46,6 +51,14 @@ public class InstantDeath implements Listener {
 		p.setExhaustion(0.0F);
 		p.setFoodLevel(20);
 		p.setFireTicks(0);
+		if (p.getKiller() != null) {
+            Player killer = p.getKiller();
+            //Controlla se ha il perk Strength-Chaining
+            if (perks2.hasStrength(killer)) {
+                // Applica la PotionEffect "Strength" al giocatore per 7 secondi (140 ticks)
+                killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 7 * 20, 0), true);
+            }
+        }
 		
 		new BukkitRunnable() {
 			@Override

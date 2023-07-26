@@ -34,18 +34,6 @@ public class PlayerPreAutoRespawnEvent extends Event implements Cancellable {
 		return p.getLastDamageCause().getCause();
 	}
 	
-	public boolean killedByPlayer() {
-		if (p.getLastDamageCause().getEntity() instanceof Player)
-			return true;
-		if (p.getLastDamageCause().getEntity() instanceof Arrow)
-			return ((Arrow) p.getLastDamageCause().getEntity()).getShooter() instanceof Player;
-		if (p.getLastDamageCause().getEntity() instanceof Snowball)
-			return ((Snowball) p.getLastDamageCause().getEntity()).getShooter() instanceof Player;
-		if (p.getLastDamageCause().getEntity() instanceof Egg)
-			return ((Egg) p.getLastDamageCause().getEntity()).getShooter() instanceof Player;
-		return false;
-	}
-	
 	public Player getKiller() {
 		return p.getKiller();
 	}
