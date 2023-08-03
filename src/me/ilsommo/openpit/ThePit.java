@@ -25,12 +25,17 @@ import me.ilsommo.openpit.utils.GoldPickupListener;
 import me.ilsommo.openpit.utils.Messages;
 import me.ilsommo.openpit.utils.Methods;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -52,6 +57,8 @@ public class ThePit extends JavaPlugin {
     public static HashMap<String, CommandModule> commands;
     private static ThePit instance;
     private GoldManager goldManager;
+    private FileConfiguration levelsConfig;
+    private File levelsFile;
 
     private PluginManager pm;
     private ConsoleCommandSender sender;
@@ -74,6 +81,11 @@ public class ThePit extends JavaPlugin {
         } else {
             sender.sendMessage(ChatColor.RED + "PlaceholderAPI not found, working without it.");
         }
+        levelsFile = new File(getDataFolder(), "levels.yml");
+        if (!levelsFile.exists()) {
+            saveResource("levels.yml", false);
+        }
+        levelsConfig = YamlConfiguration.loadConfiguration(levelsFile);
         
         instance = this;
         goldManager = new GoldManager();
@@ -178,5 +190,29 @@ public class ThePit extends JavaPlugin {
     private void startEvents() {
         ServerEventsRunnable r = new ServerEventsRunnable(this);
         r.runTaskTimer(this, 100L, 100L);
+    }
+    
+ // Metodo per salvare i livelli su levels.yml
+    public void savePlayerLevel(UUID playerUUID, double newLevel) {
+        levelsConfig.set(playerUUID.toString(), newLevel);
+
+        try {
+            levelsConfig.save(levelsFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+ // Metodo per recuperare il livello di un giocatore dal file levels.yml
+    public double getPlayerLevel(UUID playerUUID) {
+        if (levelsConfig.contains(playerUUID.toString())) {
+            return levelsConfig.getDouble(playerUUID.toString());
+        }
+        return 0; // Restituisce il livello 0 se il giocatore non ha un livello salvato
+    }
+    public int getPlayerLevelToInt(UUID playerUUID) {
+        if (levelsConfig.contains(playerUUID.toString())) {
+            return (int) levelsConfig.getDouble(playerUUID.toString());
+        }
+        return 0; // Restituisce il livello 0 se il giocatore non ha un livello salvato
     }
 }

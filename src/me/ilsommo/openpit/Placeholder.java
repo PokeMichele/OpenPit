@@ -57,7 +57,13 @@ public class Placeholder extends PlaceholderExpansion {
         	UUID playerUUID = player.getUniqueId();
             return String.valueOf(ThePit.getInstance().getGoldManager().getGold(playerUUID)); //Bypassing Methods Class
         }
- 
+        if (identifier.equalsIgnoreCase("playerlevel")) {
+            if (player != null) {
+                UUID playerUUID = player.getUniqueId();
+                int playerLevel = ThePit.getInstance().getPlayerLevelToInt(playerUUID);
+                return String.valueOf(playerLevel);
+            }
+        }
         return null;
     }
     

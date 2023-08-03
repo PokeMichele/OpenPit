@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,7 +29,6 @@ public class InstantDeath implements Listener {
 	private FileConfiguration config;
 	private Messages messages;
 	private Perks perks2;
-	private HashMap<UUID, Integer> map = new HashMap<>();
 	
 	public InstantDeath(ThePit main) {
 		this.main = main;
@@ -38,37 +38,28 @@ public class InstantDeath implements Listener {
 		this.config = main.getConfig();
 		Bukkit.getPluginManager().registerEvents(this, main);
 	}
-
+	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (!(e.getEntity() instanceof Player)) return;
-		
 		Player p = e.getEntity();
-		map.put(p.getUniqueId(), p.getTotalExperience());
 		e.getDrops().clear();
-		p.spigot().respawn();
-		p.setHealth(20.0D);
-		p.setExhaustion(0.0F);
-		p.setFoodLevel(20);
-		p.setFireTicks(0);
 		if (p.getKiller() != null) {
             Player killer = p.getKiller();
+            double newLevel = main.getPlayerLevel(killer.getUniqueId()) + 0.25;
+            main.savePlayerLevel(killer.getUniqueId(), newLevel);
             //Controlla se ha il perk Strength-Chaining
             if (perks2.hasStrength(killer)) {
                 // Applica la PotionEffect "Strength" al giocatore per 7 secondi (140 ticks)
                 killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 7 * 20, 0), true);
             }
         }
-		
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				p.setGameMode(GameMode.SURVIVAL);
-				Location spawnPoint = p.getWorld().getSpawnLocation();
-				p.teleport(spawnPoint);
-				p.setTotalExperience(map.get(p.getUniqueId()));
-			}
-		}.runTaskLater(main, 1L);
+	}
+	
+	public void onPlayerRespawnEvent(PlayerRespawnEvent e) {
+		Player p = e.getPlayer();
+		Location spawnPoint = p.getWorld().getSpawnLocation();
+		p.teleport(spawnPoint);
 	}
 
 	@EventHandler
@@ -85,14 +76,5 @@ public class InstantDeath implements Listener {
 	                return;
 	        }
 	    }
-	    
-	    Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
-	        @Override
-	        public void run() {
-	            player.spigot().respawn();
-	            Location respawnLoc = player.getLocation();
-	            Bukkit.getPluginManager().callEvent(new PlayerAutoRespawnEvent(player, deathLoc, respawnLoc));
-	        }
-	    }, 1L);
 	}
 }

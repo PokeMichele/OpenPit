@@ -121,7 +121,8 @@ public class Methods {
 				.replace("%thepit_name%", p.getName())
 				.replace("%thepit_stat%", getCombat(p))
 				.replace("%thepit_date%", date)
-				.replace("%thepit_gold%", String.valueOf(getGold(p))));	
+				.replace("%thepit_gold%", String.valueOf(getGold(p))));
+				//%thepit_playerlevel% non necessario per questo script
 		}
 	public void createHolo(String nextTop, Integer nextTopKills, Location location) {
 		new BukkitRunnable() {

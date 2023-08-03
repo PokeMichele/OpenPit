@@ -6,7 +6,8 @@
 #        %thepit_name% - displays the player's name
 #        %thepit_stat% - returns wether or not the player is in combat.
 #        %thepit_date% - returns the current date in the format day/month/year
-#        %thepit_gold% - shows how much currency the player has (NOT VAULT SUPPORTED)
+#         %thepit_playerlevel% - returns the player level
+#        %thepit_gold% - shows how much currency (gold) the player has
 # 
 # * Permissions and commands can be found on the plugin page or by typing /openpit help in-game
 #
