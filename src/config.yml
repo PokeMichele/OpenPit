@@ -1,6 +1,6 @@
 ###################################################################################################################                                                                                                   #
 # * OpenPit - An Open Source implementation of "The Pit" MiniGame
-# * This plugin requires PlaceholderAPI and ZNPCs, but will work without them.
+# * This plugin requires PlaceholderAPI, ZNPCs and DecentHologram to unlock all its features, but will work without them.
 #
 # PLACEHOLDERS:
 #        %thepit_name% - displays the player's name

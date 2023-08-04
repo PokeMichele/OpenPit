@@ -1,11 +1,13 @@
 package me.ilsommo.openpit.utils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -13,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -20,6 +23,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.ilsommo.openpit.ThePit;
 import me.ilsommo.openpit.enchants.enchants.PantEnchantTypes;
@@ -124,20 +129,34 @@ public class Methods {
 				.replace("%thepit_gold%", String.valueOf(getGold(p))));
 				//%thepit_playerlevel% non necessario per questo script
 		}
-	public void createHolo(String nextTop, Integer nextTopKills, Location location) {
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				ArmorStand as = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND); //Spawn the ArmorStand
+	public void createHolo(Player p) {
+		File killCounterFile = new File(ThePit.getInstance().getDataFolder(), "killcounter.yml");
+        if (!killCounterFile.exists()) {
+            ThePit.getInstance().getLogger().warning("Kill counter file (killcounter.yml) not found.");
+            return;
+        }
+        FileConfiguration killCounterConfig = YamlConfiguration.loadConfiguration(killCounterFile);
+        Map<String, Integer> playerKills = new HashMap<>();
 
-				as.setGravity(false); //Make sure it doesn't fall
-				as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
-				as.setCustomName(nextTop + " : " + String.valueOf(nextTopKills)); //Set this to the text you want
-				as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
-				as.setVisible(false); //Makes the ArmorStand invisible					
-			}
-		}.runTaskLater(main, 20L);
+        for (String playerName : killCounterConfig.getKeys(false)) {
+            int kills = killCounterConfig.getInt(playerName);
+            playerKills.put(playerName, kills);
+        }
+
+        List<Map.Entry<String, Integer>> sortedKills = new ArrayList<>(playerKills.entrySet());
+        sortedKills.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
+
+        List<String> hologramLines = new ArrayList<>();
+        int maxLines = 10;
+
+        for (int i = 0; i < Math.min(maxLines, sortedKills.size()); i++) {
+            Map.Entry<String, Integer> entry = sortedKills.get(i);
+            String playerName = entry.getKey();
+            int kills = entry.getValue();
+            hologramLines.add(playerName + ": " + kills);
+        }
+
+        Hologram hologram = DHAPI.createHologram("top_kills", p.getLocation(), hologramLines);
 		}
 	public void createHolo(String text, Location location, Boolean boo) {
 		new BukkitRunnable() {

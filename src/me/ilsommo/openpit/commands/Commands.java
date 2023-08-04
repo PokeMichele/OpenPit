@@ -193,8 +193,8 @@ public class Commands implements CommandExecutor {
 
 					sender.sendMessage("===========[Top]===========");
 					Location location = p.getLocation();
-					methods.createHolo("&7ThePit Level", location.add(new Vector(0, 0.1, 0)), false);
-					methods.createHolo("&b&lTHEPIT TOP PLAYERS", location.add(new Vector(0, 0.3, 0)), false);
+					methods.createHolo(p);
+					methods.createHolo(p);
 					String nextTop = "";
 					Integer nextTopKills = 0;
 
@@ -205,7 +205,7 @@ public class Commands implements CommandExecutor {
 					nextTopKills = players.get(playerName);
 				}
 			}
-			methods.createHolo(ChatColor.YELLOW + "" + i + ". " + ChatColor.GOLD + "" + nextTop + ChatColor.GRAY + " - ", nextTopKills, p.getLocation().subtract(new Vector(0.0, i/3.0, 0.0)));
+			methods.createHolo(p);
 			sender.sendMessage(i + " # " + nextTop + " : " + nextTopKills);
 			players.remove(nextTop);
 			nextTop = "";
@@ -249,6 +249,11 @@ public class Commands implements CommandExecutor {
 					}, 1L, 20*config.getLong("Gold.Intervals-In-Seconds"));
 					return true;
 				}
+					if ((args[0].equalsIgnoreCase("createholo"))) {
+			        main.getMethods().createHolo(p);
+			        p.sendMessage(ChatColor.GREEN + "Hologram Created Successfully :)");
+				    return true;
+			    	}
 					if (args[0].equalsIgnoreCase("respawn")) {
 						if (args.length < 2) {
 							p.teleport(p.getWorld().getSpawnLocation());
@@ -299,14 +304,10 @@ public class Commands implements CommandExecutor {
 				}
 			default:
 		    	if ((args[0].equalsIgnoreCase("createholo"))) {
-		        StringBuilder message = new StringBuilder();
-		        for(int i = 1; i < args.length; i++){
-		            message.append(" ").append(args[i]);
-		        }
-		        main.getMethods().createHolo(message.toString(), p.getLocation(), false);
+		        main.getMethods().createHolo(p);
+		        p.sendMessage(ChatColor.GREEN + "Hologram Created Successfully :)");
 			    return true;
-		    	
-		    }
+		    	}
 		    return true;
 			}
 		}

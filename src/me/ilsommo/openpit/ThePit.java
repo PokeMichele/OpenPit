@@ -22,6 +22,7 @@ import me.ilsommo.openpit.utils.ArmorListener;
 import me.ilsommo.openpit.utils.ExtraConfigs;
 import me.ilsommo.openpit.utils.GoldManager;
 import me.ilsommo.openpit.utils.GoldPickupListener;
+import me.ilsommo.openpit.utils.KillCounter;
 import me.ilsommo.openpit.utils.Messages;
 import me.ilsommo.openpit.utils.Methods;
 
@@ -41,6 +42,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import eu.decentsoftware.holograms.api.DHAPI;
 
 public class ThePit extends JavaPlugin {
 
@@ -90,6 +93,13 @@ public class ThePit extends JavaPlugin {
         instance = this;
         goldManager = new GoldManager();
         methods = new Methods(this);
+        
+        createOrUpdateKillCounterFile();
+        calculateAndSaveKills();
+        int updateIntervalInMinutes = 5;
+        int updateIntervalInTicks = updateIntervalInMinutes * 60 * 20;
+        Bukkit.getScheduler().runTaskTimer(this, this::calculateAndSaveKills, updateIntervalInTicks, updateIntervalInTicks);
+        Bukkit.getScheduler().runTaskTimer(this, this::updateHologram, updateIntervalInTicks, updateIntervalInTicks);
         
         registerEvents(); // Aggiungi questa linea per registrare gli eventi
         disableEntities();
@@ -191,8 +201,28 @@ public class ThePit extends JavaPlugin {
         ServerEventsRunnable r = new ServerEventsRunnable(this);
         r.runTaskTimer(this, 100L, 100L);
     }
-    
- // Metodo per salvare i livelli su levels.yml
+    private void createOrUpdateKillCounterFile() {
+        File killCounterFile = new File(getDataFolder(), "killcounter.yml");
+        if (!killCounterFile.exists()) {
+            // If the file doesn't exist, create a new empty configuration
+            FileConfiguration killCounterConfig = new YamlConfiguration();
+            try {
+                killCounterConfig.save(killCounterFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    //Update Hologram Method
+    private void updateHologram() {
+        DHAPI.updateHologram("top_kills");
+    }
+    //Method to calculate and save the kills for all players
+    private void calculateAndSaveKills() {
+        KillCounter killCounter = new KillCounter();
+        killCounter.calculateAndSaveKills();
+    }
+    // Metodo per salvare i livelli su levels.yml
     public void savePlayerLevel(UUID playerUUID, double newLevel) {
         levelsConfig.set(playerUUID.toString(), newLevel);
 

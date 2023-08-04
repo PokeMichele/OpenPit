@@ -2,7 +2,7 @@ main: me.ilsommo.openpit.ThePit
 version: 1.0
 author: Il Sommo
 name: OpenPit
-softdepend: [PlaceholderAPI, ServersNPC]
+softdepend: [PlaceholderAPI, ServersNPC, DecentHolograms]
 commands:
   protect:
     description: Protects the spawn region after selecting with gold axe.
