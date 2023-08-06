@@ -129,6 +129,7 @@ public class Methods {
 				.replace("%thepit_gold%", String.valueOf(getGold(p))));
 				//%thepit_playerlevel% non necessario per questo script
 		}
+	private Location originalHologramLocation;
 	public void createHolo(Player p) {
 		File killCounterFile = new File(ThePit.getInstance().getDataFolder(), "killcounter.yml");
         if (!killCounterFile.exists()) {
@@ -149,46 +150,59 @@ public class Methods {
         List<String> hologramLines = new ArrayList<>();
         int maxLines = 10;
 
+        hologramLines.add(ChatColor.AQUA + "TOP");
         for (int i = 0; i < Math.min(maxLines, sortedKills.size()); i++) {
             Map.Entry<String, Integer> entry = sortedKills.get(i);
             String playerName = entry.getKey();
             int kills = entry.getValue();
             hologramLines.add(playerName + ": " + kills);
         }
-
-        Hologram hologram = DHAPI.createHologram("top_kills", p.getLocation(), hologramLines);
+        Hologram hologram = DHAPI.createHologram("top_kills", p.getLocation(), true, hologramLines);
+        if (originalHologramLocation == null) {
+            originalHologramLocation = DHAPI.getHologram("top_kills").getLocation();
+        }
 		}
-	public void createHolo(String text, Location location, Boolean boo) {
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				ArmorStand as = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND); //Spawn the ArmorStand
+	
+	public void updateHologram() {
+	    ThePit thePitPlugin = ThePit.getInstance();
+	    File killCounterFile = new File(thePitPlugin.getDataFolder(), "killcounter.yml");
+	    if (!killCounterFile.exists()) {
+	        thePitPlugin.getLogger().warning("Kill counter file (killcounter.yml) not found.");
+	        return;
+	    }
 
-				as.setGravity(false); //Make sure it doesn't fall
-				as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
-				as.setCustomName(ChatColor.translateAlternateColorCodes('&', text)); //Set this to the text you want
-				as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
-				as.setVisible(false); //Makes the ArmorStand invisible	
-				if (boo) {
-					as.setSmall(true);
-				}
-			}
-		}.runTaskLater(main, 1L);
-		}
+	    FileConfiguration killCounterConfig = YamlConfiguration.loadConfiguration(killCounterFile);
+	    Map<String, Integer> playerKills = new HashMap<>();
 
-		private String c(String s) {
-		// TODO Auto-generated method stub
-		return ChatColor.translateAlternateColorCodes('&', s);
-	}
+	    // Iterate through the keys (player names) in the killcounter.yml file and update the playerKills map
+	    for (String playerName : killCounterConfig.getKeys(false)) {
+	        int kills = killCounterConfig.getInt(playerName);
+	        playerKills.put(playerName, kills);
+	    }
 
-		
-		private List<String> c(List<String> stringList) {
-			List<String> l = new ArrayList<>();
-			for (String s  : stringList) {
-				l.add(ChatColor.translateAlternateColorCodes('&', s));
-			}
-			return l;
+	    // Re-sort the playerKills map based on the updated statistics
+	    List<Map.Entry<String, Integer>> sortedKills = new ArrayList<>(playerKills.entrySet());
+	    sortedKills.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
+
+	    List<String> hologramLines = new ArrayList<>();
+	    int maxLines = 10;
+
+	    hologramLines.add(ChatColor.AQUA + "TOP");
+	    for (int i = 0; i < Math.min(maxLines, sortedKills.size()); i++) {
+	        Map.Entry<String, Integer> entry = sortedKills.get(i);
+	        String playerName = entry.getKey();
+	        int kills = entry.getValue();
+	        hologramLines.add(playerName + ": " + kills);
+	    }
+	    
+	    // Create or update the hologram with the new data
+	    if (!DHAPI.getHologram("top_kills").isEnabled()) {
+	    	DHAPI.createHologram("top_kills", originalHologramLocation, true, hologramLines);
+	    }
+	    else {
+	    	DHAPI.removeHologram("top_kills");
+	    	DHAPI.createHologram("top_kills", originalHologramLocation, true, hologramLines);
+	    }
 	}
 
 		public ItemStack setItemName(ItemStack i, List<String> list, PantEnchantTypes en, Player p, boolean t) {

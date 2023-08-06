@@ -48,11 +48,6 @@ public class InstantDeath implements Listener {
             Player killer = p.getKiller();
             double newLevel = main.getPlayerLevel(killer.getUniqueId()) + 0.25;
             main.savePlayerLevel(killer.getUniqueId(), newLevel);
-            //Controlla se ha il perk Strength-Chaining
-            if (perks2.hasStrength(killer)) {
-                // Applica la PotionEffect "Strength" al giocatore per 7 secondi (140 ticks)
-                killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 7 * 20, 0), true);
-            }
         }
 	}
 	

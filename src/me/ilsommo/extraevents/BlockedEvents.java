@@ -121,16 +121,12 @@ public class BlockedEvents implements Listener {
 			if (e.getBlock().getType().equals(XMaterial.ENDER_CHEST.parseMaterial())) {
 				Location loc = e.getBlock().getLocation();
 				Location loc2 = e.getBlock().getLocation();
-				main.getMethods().createHolo(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ENDER CHEST", loc.add(new Vector(.5, -.9, .5)), false);
-				main.getMethods().createHolo(ChatColor.GRAY + "Store items forever.", loc2.add(new Vector(.5, -1.2, .5)), false);
 				p.sendMessage(ChatColor.GREEN + "BLOCK PLACED");
 				return;
 		}
 			if (e.getBlock().getType().equals(XMaterial.ENCHANTING_TABLE.parseMaterial())) {
 				Location loc = e.getBlock().getLocation();
 				Location loc2 = e.getBlock().getLocation();
-				main.getMethods().createHolo(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "MYSTIC WELL", loc.add(new Vector(.5, -.9, .5)), false);
-				main.getMethods().createHolo(ChatColor.GRAY + "Item Enchants", loc2.add(new Vector(.5, -1.2, .5)), false);
 				p.sendMessage(ChatColor.GREEN + "BLOCK PLACED");
 				return;
 		}

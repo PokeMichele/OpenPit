@@ -42,6 +42,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import eu.decentsoftware.holograms.api.DHAPI;
 
@@ -99,7 +100,14 @@ public class ThePit extends JavaPlugin {
         int updateIntervalInMinutes = 5;
         int updateIntervalInTicks = updateIntervalInMinutes * 60 * 20;
         Bukkit.getScheduler().runTaskTimer(this, this::calculateAndSaveKills, updateIntervalInTicks, updateIntervalInTicks);
-        Bukkit.getScheduler().runTaskTimer(this, this::updateHologram, updateIntervalInTicks, updateIntervalInTicks);
+        BukkitRunnable hologramUpdater = new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateHologram();
+                System.out.println("DEBUG: Hologram updated successfully");
+            }
+        };
+        hologramUpdater.runTaskTimer(this, updateIntervalInTicks, updateIntervalInTicks);
         
         registerEvents(); // Aggiungi questa linea per registrare gli eventi
         disableEntities();
@@ -215,7 +223,7 @@ public class ThePit extends JavaPlugin {
     }
     //Update Hologram Method
     private void updateHologram() {
-        DHAPI.updateHologram("top_kills");
+       this.getMethods().updateHologram();
     }
     //Method to calculate and save the kills for all players
     private void calculateAndSaveKills() {

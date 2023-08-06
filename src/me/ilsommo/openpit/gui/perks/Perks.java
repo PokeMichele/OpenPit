@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -163,10 +164,6 @@ public class Perks
     }
   }
   
-  public boolean hasStrength(Player player) {
-      return strength.contains(player);
-  }
-  
   public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
   {
     Player player = (Player)sender;
@@ -188,6 +185,17 @@ public class Perks
 		  p.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
 	  }
   }
+  public void onPlayerDeath(PlayerDeathEvent e) {
+	  if (!(e.getEntity() instanceof Player)) return;
+		Player p = e.getEntity();
+		if (p.getKiller() != null) {
+            Player killer = p.getKiller();
+            if (strength.contains(p)) {
+                // Applica la PotionEffect "Strength" al giocatore per 7 secondi (140 ticks)
+                killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 7 * 20, 0), true);
+      		}
+        }
+  }
   public void remove(Player p) {
 	  vampire.remove(p);
 	  goldenhead.remove(p);
@@ -206,7 +214,6 @@ public class Perks
 	  if (lava.contains(p)) {
 		  p.getInventory().addItem(new ItemStack(Material.LAVA_BUCKET));
 		  p.updateInventory();
-
 		  return;
 	  }
 	  else return;
@@ -240,15 +247,15 @@ public class Perks
 
   }
   @EventHandler
-  public void on(PlayerDeathEvent e) {
+  public void on(PlayerRespawnEvent e) {
 	  new BukkitRunnable() {
 		
 		@Override
 		public void run() {
-			if (e.getEntity().getInventory().contains(Material.IRON_SWORD)){
+			if (e.getPlayer().getInventory().contains(Material.IRON_SWORD)){
 				return;
 			}
-			  giveStandardItems(e.getEntity().getPlayer());
+			  giveStandardItems(e.getPlayer().getPlayer());
 			
 		}
 	}.runTaskLater(main, 20L);
