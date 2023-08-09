@@ -69,10 +69,6 @@ public class Shop implements Listener, CommandExecutor {
 		if (!(e.getWhoClicked() instanceof Player)) {
 			return;
 		}
-		String invName = e.getInventory().getName();
-		if (!invName.equalsIgnoreCase(inv.getName())) {
-		    return;
-		}
 		e.setCancelled(true);
 
 		Player p = (Player) e.getWhoClicked();

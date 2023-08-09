@@ -16,12 +16,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
@@ -150,7 +147,7 @@ public class Methods {
         List<String> hologramLines = new ArrayList<>();
         int maxLines = 10;
 
-        hologramLines.add(ChatColor.AQUA + "TOP");
+        hologramLines.add(ChatColor.BOLD + "" + ChatColor.AQUA + "TOP");
         for (int i = 0; i < Math.min(maxLines, sortedKills.size()); i++) {
             Map.Entry<String, Integer> entry = sortedKills.get(i);
             String playerName = entry.getKey();

@@ -35,7 +35,7 @@ import me.ilsommo.openpit.utils.XTags;
 public class Perks
   implements Listener, CommandExecutor
 {
-  ArrayList<Player> vampire = new ArrayList<Player>();
+  ArrayList<Player> rod = new ArrayList<Player>();
   ArrayList<Player> goldenhead = new ArrayList<Player>();
   ArrayList<Player> extrahp = new ArrayList<Player>();
   private static Inventory inv;
@@ -79,8 +79,7 @@ public class Perks
 	  }
     p.openInventory(inv);
   }
-  
-  
+
   public void openInventory(Player p)
   {
 	initializeItems(p);
@@ -117,9 +116,10 @@ public class Perks
     	main.getPerks().openInventory(p);
     	return;
     case "Fishing Rod":
-        remove(p);
-        vampire.add(p);
-        HashMap<Integer, String> data3 = new HashMap<Integer, String>();
+    	HashMap<Integer, String> data3 = new HashMap<Integer, String>();
+    	data3.put(slot, "FISHING_ROD");
+        removeexceptrod(p);
+        rod.add(p);
         data3.put(main.getMethods().dataSlot.get(p.getUniqueId()), "FISHING_ROD");
         main.getMethods().perk1.put(p, data3);
         p.sendMessage( ChatColor.GREEN + "You equipped the Fishing Rod perk");
@@ -127,29 +127,31 @@ public class Perks
     case "Golden Head":
         HashMap<Integer, String> data = new HashMap<Integer, String>();
         data.put(slot, "GOLDEN_APPLE");
-        remove(p);
+        removeexcepthead(p);
         goldenhead.add(p);
         p.sendMessage( ChatColor.GREEN + "You equipped GoldenHeads perk");
         main.getMethods().perk1.put(p, data);
         return;
     case "Lava Bucket":
-        remove(p);
+    	HashMap<Integer, String> data2 = new HashMap<Integer, String>();
+    	data2.put(slot, "LAVA_BUCKET");
+        removeexceptlava(p);
         lava.add(p);
-        HashMap<Integer, String> data2 = new HashMap<Integer, String>();
         data2.put(main.getMethods().dataSlot.get(p.getUniqueId()), "LAVA_BUCKET");
         main.getMethods().perk1.put(p, data2);
         p.sendMessage( ChatColor.GREEN + "You equipped Lava Bucket perk");
         return;
     case "Strength-Chaining":
-        remove(p);
-        HashMap<Integer, String> data4 = new HashMap<Integer, String>();
+    	HashMap<Integer, String> data4 = new HashMap<Integer, String>();
+    	//data4.put(slot, "REDSTONE");
+        removeexceptstrength(p);
         strength.add(p);
         main.getMethods().perk1.put(p, data4);
         p.sendMessage( ChatColor.GREEN + "You equipped Strength Chaining perk");
         return;
     case "Extra HP + 4":
         p.sendMessage( ChatColor.GREEN + "You equipped firestorm animation");
-        remove(p);
+        //remove(p);
         extrahp.add(p);
         p.setHealth(28);
         return; 
@@ -172,35 +174,48 @@ public class Perks
     }
     return false;
   }
-  //Vampire
   
   @EventHandler
-  public void onHit(EntityDamageByEntityEvent e) {
-	  Entity d = e.getDamager();
-	  if (!(d instanceof Player)) {
-		  return;
-	  }
-	  Player p = (Player) e.getDamager();
-	  if (vampire.contains(p)) {
-		  p.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
-	  }
-  }
   public void onPlayerDeath(PlayerDeathEvent e) {
 	  if (!(e.getEntity() instanceof Player)) return;
 		Player p = e.getEntity();
 		if (p.getKiller() != null) {
             Player killer = p.getKiller();
-            if (strength.contains(p)) {
+            if (strength.contains(killer)) {
                 // Applica la PotionEffect "Strength" al giocatore per 7 secondi (140 ticks)
                 killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 7 * 20, 0), true);
       		}
         }
   }
-  public void remove(Player p) {
-	  vampire.remove(p);
+  public void removeexceptlava(Player p) {
+	  rod.remove(p);
 	  goldenhead.remove(p);
 	  extrahp.remove(p);
 	  strength.remove(p);
+	  goldpickup.remove(p);
+	  regen.remove(p);
+  }
+  public void removeexceptrod(Player p) {
+	  lava.remove(p);
+	  goldenhead.remove(p);
+	  extrahp.remove(p);
+	  strength.remove(p);
+	  goldpickup.remove(p);
+	  regen.remove(p);
+  }
+  public void removeexceptstrength(Player p) {
+	  rod.remove(p);
+	  lava.remove(p);
+	  goldenhead.remove(p);
+	  extrahp.remove(p);
+	  goldpickup.remove(p);
+	  regen.remove(p);
+  }
+  public void removeexcepthead(Player p) {
+	  rod.remove(p);
+	  lava.remove(p);
+	  strength.remove(p);
+	  extrahp.remove(p);
 	  goldpickup.remove(p);
 	  regen.remove(p);
   }
@@ -208,8 +223,10 @@ public class Perks
 	  if (goldenhead.contains(p)) {
 		  return;
 	  }
-	  if (vampire.contains(p)) {
-		  p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1, 100000));
+	  if (rod.contains(p)) {
+		  p.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
+		  p.updateInventory();
+		  return;
 	  }
 	  if (lava.contains(p)) {
 		  p.getInventory().addItem(new ItemStack(Material.LAVA_BUCKET));
@@ -269,7 +286,6 @@ public class Perks
 		@Override
 		public void run() {
 			  giveStandardItems(e.getPlayer());
-			
 		}
 	}.runTaskLater(main, 20L);
   }

@@ -38,13 +38,10 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import eu.decentsoftware.holograms.api.DHAPI;
 
 public class ThePit extends JavaPlugin {
 
@@ -187,12 +184,12 @@ public class ThePit extends JavaPlugin {
         pm.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
         pm.registerEvents(new Perks(this), this);
         pm.registerEvents(new GoldPickupListener(), this);
+        pm.registerEvents(new Shop(this), this);
         this.methods = new Methods(this);
         this.messages = new Messages(this);
         this.packets = new PacketUtil(this);
         this.streaks = new Streaks(this);
         this.perks = new PerksMainMenu(this);
-        this.shop = new Shop(this);
 
         new CombatLog(this);
         new GoldenHeads(this);
