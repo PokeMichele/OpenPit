@@ -72,11 +72,11 @@ public class Methods {
 		}
 		else return;
 	}
-	public ItemStack createGuiItem(String name, ArrayList<String> desc, Material material) {
+	public ItemStack createGuiItem(String name, List<String> lore, Material material) {
 		ItemStack i = new ItemStack(material, 1);
 		ItemMeta iMeta = i.getItemMeta();
 		iMeta.setDisplayName(name);
-		iMeta.setLore(desc);
+		iMeta.setLore(lore);
 		i.setItemMeta(iMeta);	
 		return i;
 	}

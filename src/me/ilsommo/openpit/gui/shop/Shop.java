@@ -13,13 +13,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,10 +32,10 @@ public class Shop implements Listener, CommandExecutor {
 	FileConfiguration config;
 	
 	public Shop(ThePit main) {
-		this.main = main;
-		this.config = main.guis;
-		this.econ = main.getMethods();
-		Bukkit.getPluginManager().registerEvents(this, main);
+	    this.main = main;
+	    this.config = main.guis;
+	    this.econ = main.getMethods();
+	    Bukkit.getPluginManager().registerEvents(this, main);
 	}
 
 	public void initializeItems(Player p) {
@@ -162,27 +159,9 @@ public class Shop implements Listener, CommandExecutor {
 		}
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		Player player = (Player) sender;
-		if ((commandLabel.equalsIgnoreCase("shop"))) {
-			openInventory(player);
-			return true;
-		}
-		return true;
-	}
-	  @EventHandler
-	   public void VillagerInventory(PlayerInteractEntityEvent e)
-	   {
-	     if(e.getRightClicked().getType() == EntityType.VILLAGER)
-	     {
-	       Villager v = (Villager) e.getRightClicked();
-	       Player p = e.getPlayer();
-	     
-	       if(v.getCustomName().contains("Name Of Villager"))
-	       {
-	         e.setCancelled(true);
-	         p.openInventory(inv);
-	       }
-	   }
+	@Override
+	public boolean onCommand(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

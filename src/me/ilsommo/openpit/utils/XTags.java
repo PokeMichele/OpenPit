@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,17 +23,20 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 /**
  * Sets/Gets NBT tags from ItemStacks 
+ * Supports 1.8-1.15
  * 
- * @version 6.5
+ * Github: https://github.com/BananaPuncher714/NBTEditor
+ * Spigot: https://www.spigotmc.org/threads/single-class-nbt-editor-for-items-skulls-mobs-and-tile-entities-1-8-1-13.269621/
+ * 
+ * @version 7.7
  * @author BananaPuncher714
  */
-public class XTags {
+public final class XTags {
 	private static final Map< String, Class<?> > classCache;
 	private static final Map< String, Method > methodCache;
 	private static final Map< Class< ? >, Constructor< ? > > constructorCache;
@@ -39,47 +44,47 @@ public class XTags {
 	private static final Map< Class< ? >, Field > NBTTagFieldCache;
 	private static Field NBTListData;
 	private static Field NBTCompoundMap;
-	private static final String version;
+	private static final String VERSION;
 
 	static {
-		version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
 		classCache = new HashMap< String, Class<?> >();
 		try {
-			classCache.put( "NBTBase", Class.forName( "net.minecraft.server." + version + "." + "NBTBase" ) );
-			classCache.put( "NBTTagCompound", Class.forName( "net.minecraft.server." + version + "." + "NBTTagCompound" ) );
-			classCache.put( "NBTTagList", Class.forName( "net.minecraft.server." + version + "." + "NBTTagList" ) );
-			classCache.put( "NBTBase", Class.forName( "net.minecraft.server." + version + "." + "NBTBase" ) );
+			classCache.put( "NBTBase", Class.forName( "net.minecraft.server." + VERSION + "." + "NBTBase" ) );
+			classCache.put( "NBTTagCompound", Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagCompound" ) );
+			classCache.put( "NBTTagList", Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagList" ) );
+			classCache.put( "NBTBase", Class.forName( "net.minecraft.server." + VERSION + "." + "NBTBase" ) );
 
-			classCache.put( "ItemStack", Class.forName( "net.minecraft.server." + version + "." + "ItemStack" ) );
-			classCache.put( "CraftItemStack", Class.forName( "org.bukkit.craftbukkit." + version + ".inventory." + "CraftItemStack" ) );
+			classCache.put( "ItemStack", Class.forName( "net.minecraft.server." + VERSION + "." + "ItemStack" ) );
+			classCache.put( "CraftItemStack", Class.forName( "org.bukkit.craftbukkit." + VERSION + ".inventory." + "CraftItemStack" ) );
 
-			classCache.put( "Entity", Class.forName( "net.minecraft.server." + version + "." + "Entity" ) );
-			classCache.put( "CraftEntity", Class.forName( "org.bukkit.craftbukkit." + version + ".entity." + "CraftEntity" ) );
-			classCache.put( "EntityLiving", Class.forName( "net.minecraft.server." + version + "." + "EntityLiving" ) );
+			classCache.put( "Entity", Class.forName( "net.minecraft.server." + VERSION + "." + "Entity" ) );
+			classCache.put( "CraftEntity", Class.forName( "org.bukkit.craftbukkit." + VERSION + ".entity." + "CraftEntity" ) );
+			classCache.put( "EntityLiving", Class.forName( "net.minecraft.server." + VERSION + "." + "EntityLiving" ) );
 
-			classCache.put( "CraftWorld", Class.forName( "org.bukkit.craftbukkit." + version + "." + "CraftWorld" ) );
-			classCache.put( "CraftBlockState", Class.forName( "org.bukkit.craftbukkit." + version + ".block." + "CraftBlockState" ) );
-			classCache.put( "BlockPosition", Class.forName( "net.minecraft.server." + version + "." + "BlockPosition" ) );
-			classCache.put( "TileEntity", Class.forName( "net.minecraft.server." + version + "." + "TileEntity" ) );
-			classCache.put( "World", Class.forName( "net.minecraft.server." + version + "." + "World" ) );
+			classCache.put( "CraftWorld", Class.forName( "org.bukkit.craftbukkit." + VERSION + "." + "CraftWorld" ) );
+			classCache.put( "CraftBlockState", Class.forName( "org.bukkit.craftbukkit." + VERSION + ".block." + "CraftBlockState" ) );
+			classCache.put( "BlockPosition", Class.forName( "net.minecraft.server." + VERSION + "." + "BlockPosition" ) );
+			classCache.put( "TileEntity", Class.forName( "net.minecraft.server." + VERSION + "." + "TileEntity" ) );
+			classCache.put( "World", Class.forName( "net.minecraft.server." + VERSION + "." + "World" ) );
 			
-			classCache.put( "TileEntitySkull", Class.forName( "net.minecraft.server." + version + "." + "TileEntitySkull" ) );
+			classCache.put( "TileEntitySkull", Class.forName( "net.minecraft.server." + VERSION + "." + "TileEntitySkull" ) );
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		NBTClasses = new HashMap< Class< ? >, Class< ? > >();
 		try {
-			NBTClasses.put( Byte.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagByte" ) );
-			NBTClasses.put( String.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagString" ) );
-			NBTClasses.put( Double.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagDouble" ) );
-			NBTClasses.put( Integer.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagInt" ) );
-			NBTClasses.put( Long.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagLong" ) );
-			NBTClasses.put( Short.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagShort" ) );
-			NBTClasses.put( Float.class, Class.forName( "net.minecraft.server." + version + "." + "NBTTagFloat" ) );
-			NBTClasses.put( Class.forName( "[B" ), Class.forName( "net.minecraft.server." + version + "." + "NBTTagByteArray" ) );
-			NBTClasses.put( Class.forName( "[I" ), Class.forName( "net.minecraft.server." + version + "." + "NBTTagIntArray" ) );
+			NBTClasses.put( Byte.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagByte" ) );
+			NBTClasses.put( String.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagString" ) );
+			NBTClasses.put( Double.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagDouble" ) );
+			NBTClasses.put( Integer.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagInt" ) );
+			NBTClasses.put( Long.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagLong" ) );
+			NBTClasses.put( Short.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagShort" ) );
+			NBTClasses.put( Float.class, Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagFloat" ) );
+			NBTClasses.put( Class.forName( "[B" ), Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagByteArray" ) );
+			NBTClasses.put( Class.forName( "[I" ), Class.forName( "net.minecraft.server." + VERSION + "." + "NBTTagIntArray" ) );
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -90,8 +95,20 @@ public class XTags {
 			methodCache.put( "set", getNMSClass( "NBTTagCompound" ).getMethod( "set", String.class, getNMSClass( "NBTBase" ) ) );
 			methodCache.put( "hasKey", getNMSClass( "NBTTagCompound" ).getMethod( "hasKey", String.class ) );
 			methodCache.put( "setIndex", getNMSClass( "NBTTagList" ).getMethod( "a", int.class, getNMSClass( "NBTBase" ) ) );
-			methodCache.put( "add", getNMSClass( "NBTTagList" ).getMethod( "add", getNMSClass( "NBTBase" ) ) );
-
+			if ( VERSION.contains( "1_14" ) || VERSION.contains( "1_15" ) ) {
+				methodCache.put( "getTypeId", getNMSClass( "NBTBase" ).getMethod( "getTypeId" ) );
+				methodCache.put( "add", getNMSClass( "NBTTagList" ).getMethod( "add", int.class, getNMSClass( "NBTBase" ) ) );
+			} else {
+				methodCache.put( "add", getNMSClass( "NBTTagList" ).getMethod( "add", getNMSClass( "NBTBase" ) ) );
+			}
+			
+			if ( VERSION.contains( "1_8" ) ) {
+				methodCache.put( "listRemove", getNMSClass( "NBTTagList" ).getMethod( "a", int.class )  );
+			} else {
+				methodCache.put( "listRemove", getNMSClass( "NBTTagList" ).getMethod( "remove", int.class )  );
+			}
+			methodCache.put( "remove", getNMSClass( "NBTTagCompound" ).getMethod( "remove", String.class ) );
+			
 			methodCache.put( "hasTag", getNMSClass( "ItemStack" ).getMethod( "hasTag" ) );
 			methodCache.put( "getTag", getNMSClass( "ItemStack" ).getMethod( "getTag" ) );
 			methodCache.put( "setTag", getNMSClass( "ItemStack" ).getMethod( "setTag", getNMSClass( "NBTTagCompound" ) ) );
@@ -102,7 +119,7 @@ public class XTags {
 			methodCache.put( "getEntityTag", getNMSClass( "Entity" ).getMethod( "c", getNMSClass( "NBTTagCompound" ) ) );
 			methodCache.put( "setEntityTag", getNMSClass( "Entity" ).getMethod( "f", getNMSClass( "NBTTagCompound" ) ) );
 
-			if ( version.contains( "1_12" ) ) {
+			if ( VERSION.contains( "1_12" ) || VERSION.contains( "1_13" ) || VERSION.contains( "1_14" ) || VERSION.contains( "1_15" ) ) {
 				methodCache.put( "setTileTag", getNMSClass( "TileEntity" ).getMethod( "load", getNMSClass( "NBTTagCompound" ) ) );
 			} else {
 				methodCache.put( "setTileTag", getNMSClass( "TileEntity" ).getMethod( "a", getNMSClass( "NBTTagCompound" ) ) );
@@ -129,21 +146,26 @@ public class XTags {
 
 		constructorCache = new HashMap< Class< ? >, Constructor< ? > >();
 		try {
-			constructorCache.put( getNBTTag( Byte.class ), getNBTTag( Byte.class ).getConstructor( byte.class ) );
-			constructorCache.put( getNBTTag( String.class ), getNBTTag( String.class ).getConstructor( String.class ) );
-			constructorCache.put( getNBTTag( Double.class ), getNBTTag( Double.class ).getConstructor( double.class ) );
-			constructorCache.put( getNBTTag( Integer.class ), getNBTTag( Integer.class ).getConstructor( int.class ) );
-			constructorCache.put( getNBTTag( Long.class ), getNBTTag( Long.class ).getConstructor( long.class ) );
-			constructorCache.put( getNBTTag( Float.class ), getNBTTag( Float.class ).getConstructor( float.class ) );
-			constructorCache.put( getNBTTag( Short.class ), getNBTTag( Short.class ).getConstructor( short.class ) );
-			constructorCache.put( getNBTTag( Class.forName( "[B" ) ), getNBTTag( Class.forName( "[B" ) ).getConstructor( Class.forName( "[B" ) ) );
-			constructorCache.put( getNBTTag( Class.forName( "[I" ) ), getNBTTag( Class.forName( "[I" ) ).getConstructor( Class.forName( "[I" ) ) );
-
+			constructorCache.put( getNBTTag( Byte.class ), getNBTTag( Byte.class ).getDeclaredConstructor( byte.class ) );
+			constructorCache.put( getNBTTag( String.class ), getNBTTag( String.class ).getDeclaredConstructor( String.class ) );
+			constructorCache.put( getNBTTag( Double.class ), getNBTTag( Double.class ).getDeclaredConstructor( double.class ) );
+			constructorCache.put( getNBTTag( Integer.class ), getNBTTag( Integer.class ).getDeclaredConstructor( int.class ) );
+			constructorCache.put( getNBTTag( Long.class ), getNBTTag( Long.class ).getDeclaredConstructor( long.class ) );
+			constructorCache.put( getNBTTag( Float.class ), getNBTTag( Float.class ).getDeclaredConstructor( float.class ) );
+			constructorCache.put( getNBTTag( Short.class ), getNBTTag( Short.class ).getDeclaredConstructor( short.class ) );
+			constructorCache.put( getNBTTag( Class.forName( "[B" ) ), getNBTTag( Class.forName( "[B" ) ).getDeclaredConstructor( Class.forName( "[B" ) ) );
+			constructorCache.put( getNBTTag( Class.forName( "[I" ) ), getNBTTag( Class.forName( "[I" ) ).getDeclaredConstructor( Class.forName( "[I" ) ) );
+			
+			// This is for 1.15 since Mojang decided to make the constructors private
+			for ( Constructor< ? > cons : constructorCache.values() ) {
+				cons.setAccessible( true );
+			}
+			
 			constructorCache.put( getNMSClass( "BlockPosition" ), getNMSClass( "BlockPosition" ).getConstructor( int.class, int.class, int.class ) );
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
-
+		
 		NBTTagFieldCache = new HashMap< Class< ? >, Field >();
 		try {
 			for ( Class< ? > clazz : NBTClasses.values() ) {
@@ -165,18 +187,16 @@ public class XTags {
 		}
 	}
 
-	public static Class<?> getPrimitiveClass( Class<?> clazz ) {
-		return Primitives.unwrap( clazz );
-	}
-
-	public static Class< ? > getNBTTag( Class< ? > primitiveType ) {
+	private static Class< ? > getNBTTag( Class< ? > primitiveType ) {
 		if ( NBTClasses.containsKey( primitiveType ) )
 			return NBTClasses.get( primitiveType );
 		return primitiveType;
 	}
 
-	public static Object getNBTVar( Object object ) {
-		if ( object == null ) return null;
+	private static Object getNBTVar( Object object ) {
+		if ( object == null ) {
+			return null;
+		}
 		Class< ? > clazz = object.getClass();
 		try {
 			if ( NBTTagFieldCache.containsKey( clazz ) ) {
@@ -188,28 +208,28 @@ public class XTags {
 		return null;
 	}
 
-	public static Method getMethod( String name ) {
+	private static Method getMethod( String name ) {
 		return methodCache.containsKey( name ) ? methodCache.get( name ) : null;
 	}
 
-	public static Constructor< ? > getConstructor( Class< ? > clazz ) {
+	private static Constructor< ? > getConstructor( Class< ? > clazz ) {
 		return constructorCache.containsKey( clazz ) ? constructorCache.get( clazz ) : null;
 	}
 
-	public static Class<?> getNMSClass(String name) {
+	private static Class<?> getNMSClass(String name) {
 		if ( classCache.containsKey( name ) ) {
 			return classCache.get( name );
 		}
 
 		try {
-			return Class.forName("net.minecraft.server." + version + "." + name);
+			return Class.forName("net.minecraft.server." + VERSION + "." + name);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
-	public static String getMatch( String string, String regex ) {
+	private static String getMatch( String string, String regex ) {
 		Pattern pattern = Pattern.compile( regex );
 		Matcher matcher = pattern.matcher( string );
 		if ( matcher.find() ) {
@@ -218,7 +238,25 @@ public class XTags {
 			return null;
 		}
 	}
+	
+	/**
+	 * Gets the Bukkit version
+	 * 
+	 * @return
+	 * The Bukkit version in standard package format
+	 */
+	public final static String getVersion() {
+		return VERSION;
+	}
 
+	/**
+	 * Creates a skull with the given url as the skin
+	 * 
+	 * @param skinURL
+	 * The URL of the skin, must be from mojang
+	 * @return
+	 * An item stack with count of 1
+	 */
 	public final static ItemStack getHead( String skinURL ) {
 		Material material = Material.getMaterial( "SKULL_ITEM" );
 		if ( material == null ) {
@@ -249,6 +287,14 @@ public class XTags {
 		return head;
 	}
 	
+	/**
+	 * Fetches the texture of a skull
+	 * 
+	 * @param head
+	 * The item stack itself
+	 * @return
+	 * The URL of the texture
+	 */
 	public final static String getTexture( ItemStack head ) {
 		ItemMeta meta = head.getItemMeta();
 		Field profileField = null;
@@ -256,6 +302,7 @@ public class XTags {
 			profileField = meta.getClass().getDeclaredField("profile");
 		} catch ( NoSuchFieldException | SecurityException e ) {
 			e.printStackTrace();
+			throw new IllegalArgumentException( "Item is not a player skull!" );
 		}
 		profileField.setAccessible(true);
 		try {
@@ -278,6 +325,8 @@ public class XTags {
 	}
 
 	/**
+	 * @deprecated
+	 * 
 	 * Gets an NBT tag in a given item with the specified keys
 	 * 
 	 * @param item
@@ -288,7 +337,7 @@ public class XTags {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
-	public static Object getItemTag( ItemStack item, Object... keys ) {
+	public final static Object getItemTag( ItemStack item, Object... keys ) {
 		if ( item == null ) {
 			return null;
 		}
@@ -312,7 +361,47 @@ public class XTags {
 	}
 
 	/**
+	 * Gets an NBTCompound from the item provided
+	 * 
+	 * @param item
+	 * Itemstack
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * An NBTCompound
+	 */
+	public final static NBTCompound getItemNBTTag( ItemStack item, Object... keys ) {
+		if ( item == null ) {
+			return null;
+		}
+		try {
+			Object stack = null;
+			stack = getMethod( "asNMSCopy" ).invoke( null, item );
+
+			Object tag = null;
+
+			if ( getMethod( "hasTag" ).invoke( stack ).equals( true ) ) {
+				tag = getMethod( "getTag" ).invoke( stack );
+			} else {
+				tag = getNMSClass( "NBTTagCompound" ).newInstance();
+				Object count = getConstructor( getNBTTag( Integer.class ) ).newInstance( item.getAmount() );
+				getMethod( "set" ).invoke( tag, "Count", count );
+				Object id = getConstructor( getNBTTag( String.class ) ).newInstance( item.getType().name().toLowerCase() );
+				getMethod( "set" ).invoke( tag, "id", id );
+			}
+
+			return getNBTTag( tag, keys );
+		} catch ( Exception exception ) {
+			exception.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * @deprecated
+	 * 
 	 * Sets an NBT tag in an item with the provided keys and value
+	 * Should use the {@link set(Object, Object, Object...)} method instead
 	 * 
 	 * @param item
 	 * The itemstack to set
@@ -323,7 +412,7 @@ public class XTags {
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
-	public static ItemStack setItemTag( ItemStack item, Object value, Object... keys ) {
+	public final static ItemStack setItemTag( ItemStack item, Object value, Object... keys ) {
 		if ( item == null ) {
 			return null;
 		}
@@ -346,8 +435,42 @@ public class XTags {
 			return null;
 		}
 	}
+	
+	/**
+	 * Constructs an ItemStack from a given NBTCompound
+	 * 
+	 * @param compound
+	 * An NBTCompound following an ItemStack structure
+	 * @return
+	 * A new ItemStack
+	 */
+	public final static ItemStack getItemFromTag( NBTCompound compound ) {
+		if ( compound == null ) {
+			return null;
+		}
+		try {
+			Object tag = compound.tag;
+			Object count = getTag( tag, "Count" );
+			Object id = getTag( tag, "id" );
+			if ( count == null || id == null ) {
+				return null;
+			}
+			if ( count instanceof Byte && id instanceof String ) {
+				int amount = ( byte ) count;
+				String material = ( String ) id;
+				Material type = Material.valueOf( material.substring( material.indexOf( ":" ) + 1 ).toUpperCase() );
+				return XTags.setItemTag( new ItemStack( type, amount ), tag );
+			}
+			return null;
+		} catch ( Exception exception ) {
+			exception.printStackTrace();
+			return null;
+		}
+	}
 
 	/**
+	 * @deprecated
+	 * 
 	 * Gets an NBT tag in a given entity with the specified keys
 	 * 
 	 * @param block
@@ -358,7 +481,7 @@ public class XTags {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
-	public static Object getEntityTag( Entity entity, Object... keys ) {
+	public final static Object getEntityTag( Entity entity, Object... keys ) {
 		if ( entity == null ) {
 			return entity;
 		}
@@ -375,12 +498,42 @@ public class XTags {
 			return null;
 		}
 	}
+	
+	/**
+	 * Gets an NBTCompound from the entity provided
+	 * 
+	 * @param entity
+	 * The Bukkit entity provided
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * An NBTCompound
+	 */
+	public final static NBTCompound getEntityNBTTag( Entity entity, Object...keys ) {
+		if ( entity == null ) {
+			return null;
+		}
+		try {
+			Object NMSEntity = getMethod( "getEntityHandle" ).invoke( entity );
+
+			Object tag = getNMSClass( "NBTTagCompound" ).newInstance();
+
+			getMethod( "getEntityTag" ).invoke( NMSEntity, tag );
+
+			return getNBTTag( tag, keys );
+		} catch ( Exception exception ) {
+			exception.printStackTrace();
+			return null;
+		}
+	}
 
 	/**
+	 * @deprecated
+	 * 
 	 * Sets an NBT tag in an entity with the provided keys and value
+	 * Should use the {@link set(Object, Object, Object...)} method instead
 	 * 
 	 * @param item
-	 * 
 	 * The entity to set
 	 * @param key
 	 * The keys to set, String for NBTCompound, int or null for an NBTTagList
@@ -389,7 +542,7 @@ public class XTags {
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
-	public static void setEntityTag( Entity entity, Object value, Object... keys ) {
+	public final static void setEntityTag( Entity entity, Object value, Object... keys ) {
 		if ( entity == null ) {
 			return;
 		}
@@ -410,6 +563,8 @@ public class XTags {
 	}
 
 	/**
+	 * @deprecated
+	 * 
 	 * Gets an NBT tag in a given block with the specified keys
 	 * 
 	 * @param block
@@ -420,7 +575,7 @@ public class XTags {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
-	public static Object getBlockTag( Block block, Object... keys ) {
+	public final static Object getBlockTag( Block block, Object... keys ) {
 		try {
 			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
 				return null;
@@ -443,9 +598,46 @@ public class XTags {
 			return null;
 		}
 	}
+	
+	/**
+	 * Gets an NBTCompound from the block provided
+	 * 
+	 * @param block
+	 * The block provided
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * An NBTCompound
+	 */
+	public final static Object getBlockNBTTag( Block block, Object... keys ) {
+		try {
+			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
+				return null;
+			}
+			Location location = block.getLocation();
+			
+			Object blockPosition = getConstructor( getNMSClass( "BlockPosition" ) ).newInstance( location.getBlockX(), location.getBlockY(), location.getBlockZ() );
+
+			Object nmsWorld = getMethod( "getWorldHandle" ).invoke( location.getWorld() );
+			
+			Object tileEntity = getMethod( "getTileEntity" ).invoke( nmsWorld, blockPosition );
+
+			Object tag = getNMSClass( "NBTTagCompound" ).newInstance();
+			
+			getMethod( "getTileTag" ).invoke( tileEntity, tag );
+
+			return getNBTTag( tag, keys );
+		} catch( Exception exception ) {
+			exception.printStackTrace();
+			return null;
+		}
+	}
 
 	/**
+	 * @deprecated
+	 * 
 	 * Sets an NBT tag in an block with the provided keys and value
+	 * Should use the {@link set(Object, Object, Object...)} method instead
 	 * 
 	 * @param item
 	 * The block to set
@@ -456,7 +648,7 @@ public class XTags {
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
-	public static void setBlockTag( Block block, Object value, Object... keys ) {
+	public final static void setBlockTag( Block block, Object value, Object... keys ) {
 		try {
 			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
 				return;
@@ -482,7 +674,15 @@ public class XTags {
 		}
 	}
 	
-	public static void setSkullTexture( Block block, String texture ) {
+	/**
+	 * Sets the texture of a skull block
+	 * 
+	 * @param block
+	 * The block, must be a skull
+	 * @param texture
+	 * The URL of the skin
+	 */
+	public final static void setSkullTexture( Block block, String texture ) {
 		GameProfile profile = new GameProfile( UUID.randomUUID(), null );
 		profile.getProperties().put( "textures", new com.mojang.authlib.properties.Property( "textures", new String( Base64.encodeBase64( String.format( "{textures:{SKIN:{\"url\":\"%s\"}}}", texture ).getBytes() ) ) ) );
 		
@@ -500,20 +700,283 @@ public class XTags {
 			exception.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Gets a string from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * A string, or null if none is stored at the provided location
+	 */
+	public final static String getString( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof String ? ( String ) result : null;
+	}
+	
+	/**
+	 * Gets an int from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * An integer, or 0 if none is stored at the provided location
+	 */
+	public final static int getInt( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof Integer ? ( int ) result : 0;
+	}
+	
+	/**
+	 * Gets a long from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * A long, or 0 if none is stored at the provided location
+	 */
+	public final static long getLong( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof Long ? ( long ) result : 0;
+	}
+	
+	/**
+	 * Gets a float from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * A float, or 0 if none is stored at the provided location
+	 */
+	public final static float getFloat( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof Float ? ( float ) result : 0;
+	}
+	
+	/**
+	 * Gets a short from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * A short, or 0 if none is stored at the provided location
+	 */
+	public final static short getShort( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof Short ? ( short ) result : 0;
+	}
+	
+	/**
+	 * Gets a byte from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * A byte, or 0 if none is stored at the provided location
+	 */
+	public final static byte getByte( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof Byte ? ( byte ) result : 0;
+	}
+	
+	/**
+	 * Gets a byte array from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * A byte array, or null if none is stored at the provided location
+	 */
+	public final static byte[] getByteArray( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof byte[] ? ( byte[] ) result : null;
+	}
+	
+	/**
+	 * Gets an int array from an object
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * An int array, or null if none is stored at the provided location
+	 */
+	public final static int[] getIntArray( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result instanceof int[] ? ( int[] ) result : null;
+	}
+	
+	/**
+	 * Checks if the object contains the given key
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param keys
+	 * Keys in descending order
+	 * @return
+	 * Whether or not the particular tag exists, may not be a primitive
+	 */
+	public final static boolean contains( Object object, Object... keys ) {
+		Object result;
+		if ( object instanceof ItemStack ) {
+			result = getItemTag( ( ItemStack ) object, keys );
+		} else if ( object instanceof Entity ) {
+			result = getEntityTag( ( Entity ) object, keys );
+		} else if ( object instanceof Block ) {
+			result = getBlockTag( ( Block ) object, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return result != null;
+	}
+	
+	/**
+	 * Sets the value in the object with the given keys
+	 * 
+	 * @param object
+	 * Must be an ItemStack, Entity, or Block
+	 * @param value
+	 * The value to set, can be an NBTCompound
+	 * @param keys
+	 * The keys in descending order
+	 * @return
+	 * The new item stack if the object provided is an item, else original object
+	 */
+	public final static < T > T set( T object, Object value, Object... keys ) {
+		if ( object instanceof ItemStack ) {
+			return ( T ) setItemTag( ( ItemStack ) object, value, keys );
+		} else if ( object instanceof Entity ) {
+			setEntityTag( ( Entity ) object, value, keys );
+		} else if ( object instanceof Block ) {
+			setBlockTag( ( Block ) object, value, keys );
+		} else {
+			throw new IllegalArgumentException( "Object provided must be of type ItemStack, Entity, or Block!" );
+		}
+		return object;
+	}
 
 	private static void setTag( Object tag, Object value, Object... keys ) throws Exception {
-		Object notCompound = getConstructor( getNBTTag( value.getClass() ) ).newInstance( value );
+		Object notCompound;
+		if ( value != null ) {
+			if ( getNMSClass( "NBTTagList" ).isInstance( value ) || getNMSClass( "NBTTagCompound" ).isInstance( value ) ) {
+				notCompound = value;
+			} else {
+				notCompound = getConstructor( getNBTTag( value.getClass() ) ).newInstance( value );
+			}
+		} else {
+			notCompound = null;
+		}
 
 		Object compound = tag;
 		for ( int index = 0; index < keys.length; index++ ) {
 			Object key = keys[ index ];
 			if ( index + 1 == keys.length ) {
 				if ( key == null ) {
-					getMethod( "add" ).invoke( compound, notCompound );
+					if ( VERSION.contains( "1_14" ) ) {
+						int type = ( int ) getMethod( "getTypeId" ).invoke( notCompound );
+						getMethod( "add" ).invoke( compound, type, notCompound );
+					} else {
+						getMethod( "add" ).invoke( compound, notCompound );
+					}
 				} else if ( key instanceof Integer ) {
-					getMethod( "setIndex" ).invoke( compound, ( int ) key, notCompound );
+					if ( notCompound == null ) {
+						getMethod( "listRemove" ).invoke( compound, ( int ) key );
+					} else {
+						getMethod( "setIndex" ).invoke( compound, ( int ) key, notCompound );
+					}
 				} else {
-					getMethod( "set" ).invoke( compound, ( String ) key, notCompound );
+					if ( notCompound == null ) {
+						getMethod( "remove" ).invoke( compound, ( String ) key );
+					} else {
+						getMethod( "set" ).invoke( compound, ( String ) key, notCompound );
+					}
 				}
 				break;
 			}
@@ -530,14 +993,38 @@ public class XTags {
 					compound = getNMSClass( "NBTTagCompound" ).newInstance();
 				}
 				if ( oldCompound.getClass().getSimpleName().equals( "NBTTagList" ) ) {
-					getMethod( "add" ).invoke( oldCompound, compound );
+					if ( VERSION.contains( "1_14" ) ) {
+						int type = ( int ) getMethod( "getTypeId" ).invoke( notCompound );
+						getMethod( "add" ).invoke( compound, type, notCompound );
+					} else {
+						getMethod( "add" ).invoke( compound, notCompound );
+					}
 				} else {
-					getMethod( "set" ).invoke( oldCompound, ( String ) key, compound );
+					if ( notCompound == null ) {
+						getMethod( "remove" ).invoke( oldCompound, ( String ) key );
+					} else {
+						getMethod( "set" ).invoke( oldCompound, ( String ) key, compound );
+					}
 				}
 			}
 		}
 	}
 
+	private static NBTCompound getNBTTag( Object tag, Object...keys ) throws Exception {
+		Object compound = tag;
+		
+		for ( Object key : keys ) {
+			if ( compound == null ) {
+				return null;
+			} else if ( getNMSClass( "NBTTagCompound" ).isInstance( compound ) ) {
+				compound = getMethod( "get" ).invoke( compound, ( String ) key );
+			} else if ( getNMSClass( "NBTTagList" ).isInstance( compound ) ) {
+				compound = ( ( List< ? > ) NBTListData.get( compound ) ).get( ( int ) key );
+			}
+		}
+		return new NBTCompound( compound );
+	}
+	
 	private static Object getTag( Object tag, Object... keys ) throws Exception {
 		if ( keys.length == 0 ) {
 			return getTags( tag );
@@ -596,6 +1083,44 @@ public class XTags {
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			return tags;
+		}
+	}
+	
+	/**
+	 * A class for holding NBTTagCompounds
+	 */
+	public static final class NBTCompound {
+		protected final Object tag;
+		
+		protected NBTCompound( @Nonnull Object tag ) {
+			this.tag = tag;
+		}
+
+		@Override
+		public String toString() {
+			return tag.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			return tag.hashCode();
+		}
+
+		@Override
+		public boolean equals( Object obj ) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			NBTCompound other = (NBTCompound) obj;
+			if (tag == null) {
+				if (other.tag != null)
+					return false;
+			} else if (!tag.equals(other.tag))
+				return false;
+			return true;
 		}
 	}
 }

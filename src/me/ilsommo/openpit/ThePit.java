@@ -6,7 +6,6 @@ import me.ilsommo.extraevents.GoldenHeads;
 import me.ilsommo.extraevents.HealthBar;
 import me.ilsommo.extraevents.PlaceEvents;
 import me.ilsommo.extraevents.PlayerDamage;
-import me.ilsommo.extraevents.Streaks;
 import me.ilsommo.openpit.commands.CommandModule;
 import me.ilsommo.openpit.commands.Commands;
 import me.ilsommo.openpit.commands.TabComplete;
@@ -38,6 +37,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,7 +49,6 @@ public class ThePit extends JavaPlugin {
     private Methods methods;
     private Messages messages;
     private PacketUtil packets;
-    private Streaks streaks;
     private PerksMainMenu perks;
     private Perks perks2;
     private Shop shop;
@@ -147,10 +146,6 @@ public class ThePit extends JavaPlugin {
         return this.packets;
     }
 
-    public Streaks getStreaks() {
-        return this.streaks;
-    }
-
     public PerksMainMenu getPerks() {
         return this.perks;
     }
@@ -188,7 +183,6 @@ public class ThePit extends JavaPlugin {
         this.methods = new Methods(this);
         this.messages = new Messages(this);
         this.packets = new PacketUtil(this);
-        this.streaks = new Streaks(this);
         this.perks = new PerksMainMenu(this);
 
         new CombatLog(this);

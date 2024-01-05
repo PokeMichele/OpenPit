@@ -68,7 +68,7 @@ public class Commands implements CommandExecutor {
 				  }
 		          if (args[0].equalsIgnoreCase("spawnshop")) {
 		        	  PluginManager pluginManager = Bukkit.getServer().getPluginManager();
-		        	    if (pluginManager.isPluginEnabled("znpcs-4.2") || pluginManager.isPluginEnabled("ServersNPC") == true) {
+		        	    if (pluginManager.isPluginEnabled("znpcs-4.6") || pluginManager.isPluginEnabled("ServersNPC") == true) {
 		        	        int npcid = 118;
 		        	        NPC npc = ServersNPC.createNPC(npcid, NPCType.PLAYER, p.getLocation(), "&6&lShop");
 		        	        npc.lookAt(ZUser.find(p), p.getLocation(), true);
@@ -82,12 +82,12 @@ public class Commands implements CommandExecutor {
                   }
 		          if (args[0].equalsIgnoreCase("spawnperks")) {
 		        	    PluginManager pluginManager = Bukkit.getServer().getPluginManager();
-		        	    if (pluginManager.isPluginEnabled("znpcs-4.2") || pluginManager.isPluginEnabled("ServersNPC") == true) {
+		        	    if (pluginManager.isPluginEnabled("znpcs-4.6") || pluginManager.isPluginEnabled("ServersNPC") == true) {
 		        	        int npcid = 104;
 		        	        NPC npc = ServersNPC.createNPC(npcid, NPCType.PLAYER, p.getLocation(), "&1&lPerks");
 		        	        npc.lookAt(ZUser.find(p), p.getLocation(), true);
 		        	        npc.getNpcPojo().getClickActions().add(new NPCAction("CMD", "openpit perks"));
-		        	        p.sendMessage(ChatColor.BLUE + "Perks NPC Successfully Created");
+		        	        p.sendMessage(ChatColor.AQUA + "Perks NPC Successfully Created");
 		        	        return true;
 		        	    } else {
 		        	        p.sendMessage("Please, install ZNPCs to run this command");
