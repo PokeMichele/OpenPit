@@ -169,38 +169,7 @@ public class Perks implements Listener, CommandExecutor {
       		}
         }
   }
-  public void removeExceptLava(Player p) {
-	  rod.remove(p);
-	  goldenhead.remove(p);
-	  extrahp.remove(p);
-	  strength.remove(p);
-	  goldpickup.remove(p);
-	  regen.remove(p);
-  }
-  public void removeExceptRod(Player p) {
-	  lava.remove(p);
-	  goldenhead.remove(p);
-	  extrahp.remove(p);
-	  strength.remove(p);
-	  goldpickup.remove(p);
-	  regen.remove(p);
-  }
-  public void removeExceptStrength(Player p) {
-	  rod.remove(p);
-	  lava.remove(p);
-	  goldenhead.remove(p);
-	  extrahp.remove(p);
-	  goldpickup.remove(p);
-	  regen.remove(p);
-  }
-  public void removeExceptHead(Player p) {
-	  rod.remove(p);
-	  lava.remove(p);
-	  strength.remove(p);
-	  extrahp.remove(p);
-	  goldpickup.remove(p);
-	  regen.remove(p);
-  }
+ 
   public void giveItems(Player p) {
 	  if (goldenhead.contains(p)) {
 	  }
