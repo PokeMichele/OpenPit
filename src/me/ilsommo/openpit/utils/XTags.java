@@ -516,6 +516,7 @@ public final class XTags {
 		try {
 			Object NMSEntity = getMethod( "getEntityHandle" ).invoke( entity );
 
+			@SuppressWarnings("deprecation")
 			Object tag = getNMSClass( "NBTTagCompound" ).newInstance();
 
 			getMethod( "getEntityTag" ).invoke( NMSEntity, tag );
@@ -622,6 +623,7 @@ public final class XTags {
 			
 			Object tileEntity = getMethod( "getTileEntity" ).invoke( nmsWorld, blockPosition );
 
+			@SuppressWarnings("deprecation")
 			Object tag = getNMSClass( "NBTTagCompound" ).newInstance();
 			
 			getMethod( "getTileTag" ).invoke( tileEntity, tag );
@@ -942,6 +944,7 @@ public final class XTags {
 		return object;
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void setTag( Object tag, Object value, Object... keys ) throws Exception {
 		Object notCompound;
 		if ( value != null ) {

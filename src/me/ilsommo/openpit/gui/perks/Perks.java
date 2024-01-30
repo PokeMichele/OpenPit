@@ -82,7 +82,7 @@ public class Perks implements Listener, CommandExecutor {
     public void openInventory(Player p) {
         initializeItems(p);
     }
-
+/*
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) {
@@ -148,7 +148,7 @@ public class Perks implements Listener, CommandExecutor {
         giveItems(player);
         player.sendMessage(successMessage);
     }
-  
+  */
   public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
   {
     Player player = (Player)sender;
@@ -158,7 +158,7 @@ public class Perks implements Listener, CommandExecutor {
     return false;
   }
   
-  @EventHandler
+/*  @EventHandler
   public void onPlayerDeath(PlayerDeathEvent e) {
 	  if (!(e.getEntity() instanceof Player)) return;
 		Player p = e.getEntity();
@@ -168,21 +168,8 @@ public class Perks implements Listener, CommandExecutor {
                 killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 7 * 20, 0), true);
       		}
         }
-  }
+  }*/
  
-  public void giveItems(Player p) {
-	  if (goldenhead.contains(p)) {
-	  }
-	  if (rod.contains(p)) {
-		  p.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
-		  p.updateInventory();
-	  }
-	  if (lava.contains(p)) {
-		  p.getInventory().addItem(new ItemStack(Material.LAVA_BUCKET));
-		  p.updateInventory();
-	  }
-	  System.out.println("Perks Items Given to " + p.getName());
-  }
   private void giveStandardItems(Player p) {
 	  
 	  p.getInventory().setLeggings(XMaterial.CHAINMAIL_LEGGINGS.parseItem());
@@ -192,7 +179,7 @@ public class Perks implements Listener, CommandExecutor {
 	  p.getInventory().setItem(1, new ItemStack(Material.BOW));
 	  p.getInventory().setItem(2, new ItemStack(Material.ARROW, 32));
 	  
-	  giveItems(p);
+	  /*giveItems(p);*/
 	  p.updateInventory();
 
   }

@@ -12,8 +12,10 @@ import net.md_5.bungee.api.ChatColor;
 
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class GoldPickupListener implements Listener {
-    @EventHandler
+    @SuppressWarnings("deprecation")
+	@EventHandler
     public void onGoldPickup(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem().getItemStack();

@@ -13,6 +13,7 @@ import me.ilsommo.openpit.commands.subcommands.Gold;
 import me.ilsommo.openpit.enchants.pants.PantsEnchants;
 import me.ilsommo.openpit.gui.mysticwell.MysticWell;
 import me.ilsommo.openpit.gui.perks.Perks;
+import me.ilsommo.openpit.gui.perks.PerksInfo;
 import me.ilsommo.openpit.gui.perks.PerksMainMenu;
 import me.ilsommo.openpit.gui.shop.Shop;
 import me.ilsommo.openpit.packets.PacketUtil;
@@ -55,10 +56,12 @@ public class ThePit extends JavaPlugin {
     public ExtraConfigs guis;
     public ExtraConfigs vaults;
     public static HashMap<String, CommandModule> commands;
-    private static ThePit instance;
+    public static ThePit instance;
     private GoldManager goldManager;
     private FileConfiguration levelsConfig;
+    private FileConfiguration perksConfig;
     private File levelsFile;
+    public File perksFile;
 
     private PluginManager pm;
     private ConsoleCommandSender sender;
@@ -86,6 +89,11 @@ public class ThePit extends JavaPlugin {
             saveResource("levels.yml", false);
         }
         levelsConfig = YamlConfiguration.loadConfiguration(levelsFile);
+        perksFile = new File(getDataFolder(), "perks.yml");
+        if (!perksFile.exists()) {
+            saveResource("perks.yml", false);
+        }
+        perksConfig = YamlConfiguration.loadConfiguration(perksFile);
         
         instance = this;
         goldManager = new GoldManager();
@@ -178,6 +186,7 @@ public class ThePit extends JavaPlugin {
     private void registerEvents() {
         pm.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
         pm.registerEvents(new Perks(this), this);
+        pm.registerEvents(new PerksInfo(this), this);
         pm.registerEvents(new GoldPickupListener(), this);
         pm.registerEvents(new Shop(this), this);
         this.methods = new Methods(this);

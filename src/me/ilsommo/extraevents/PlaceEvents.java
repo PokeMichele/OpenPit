@@ -24,6 +24,7 @@ public class PlaceEvents implements Listener {
 		this.main = main;
 		Bukkit.getPluginManager().registerEvents(this, main);
 	}
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void obsidian(BlockPlaceEvent e) {
 		Player p = e.getPlayer();
