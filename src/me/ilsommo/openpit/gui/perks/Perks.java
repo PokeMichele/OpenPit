@@ -1,9 +1,6 @@
 package me.ilsommo.openpit.gui.perks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,7 +26,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.ilsommo.openpit.ThePit;
 import me.ilsommo.openpit.utils.XMaterial;
-import me.ilsommo.openpit.utils.XSounds;
 import me.ilsommo.openpit.utils.XTags;
 
 public class Perks implements Listener, CommandExecutor {
@@ -82,73 +78,7 @@ public class Perks implements Listener, CommandExecutor {
     public void openInventory(Player p) {
         initializeItems(p);
     }
-/*
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) {
-            return;
-        }
-        String invName = e.getInventory().getName();
-        if (!invName.equals("Perks")) {
-            return;
-        }
-        e.setCancelled(true);
 
-        Player p = (Player) e.getWhoClicked();
-        ItemStack clickedItem = e.getCurrentItem();
-        if (clickedItem == null || !clickedItem.hasItemMeta() || !clickedItem.getItemMeta().hasDisplayName()) {
-            return;
-        }
-
-        String perkType = (String) XTags.getItemTag(clickedItem, "Type");
-        if (perkType == null) {
-            return;
-        }
-
-        switch (perkType) {
-            case "Go Back":
-                p.closeInventory();
-                main.getPerks().openInventory(p);
-                break;
-            case "Fishing Rod":
-                handlePerkSelection(p, "FISHING_ROD", rod, ChatColor.GREEN + "You equipped the Fishing Rod perk");
-                break;
-            case "Golden Head":
-                handlePerkSelection(p, "GOLDEN_APPLE", goldenhead, ChatColor.GREEN + "You equipped GoldenHeads perk");
-                break;
-            case "Lava Bucket":
-                handlePerkSelection(p, "LAVA_BUCKET", lava, ChatColor.GREEN + "You equipped Lava Bucket perk");
-                break;
-            case "Strength-Chaining":
-                handlePerkSelection(p, "REDSTONE", strength, ChatColor.GREEN + "You equipped Strength Chaining perk");
-                break;
-            case "LOCKED!":
-                p.sendMessage(ChatColor.RED + "This perk is locked! Please upgrade your level to gain access.");
-                p.playSound(p.getLocation(), XSounds.ENDERMAN_HIT.parseSound(), 1, 1);
-                p.closeInventory();
-                break;
-            default:
-                p.sendMessage(ChatColor.RED + "PERK NOT FOUND! ERROR");
-                break;
-        }
-    }
-
-    private void handlePerkSelection(Player player, String perkData, List<Player> perkList, String successMessage) {
-        HashMap<Integer, String> data = new HashMap<>();
-        data.put(slot, perkData);
-
-        rod.remove(player);
-        goldenhead.remove(player);
-        lava.remove(player);
-        strength.remove(player);
-
-        perkList.add(player);
-        data.put(main.getMethods().dataSlot.get(player.getUniqueId()), perkData);
-        main.getMethods().perk1.put(player, data);
-        giveItems(player);
-        player.sendMessage(successMessage);
-    }
-  */
   public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
   {
     Player player = (Player)sender;

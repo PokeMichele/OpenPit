@@ -158,7 +158,7 @@ public class Methods {
         if (originalHologramLocation == null) {
             originalHologramLocation = DHAPI.getHologram("top_kills").getLocation();
         }
-		}
+	}
 	
 	public void updateHologram() {
 	    ThePit thePitPlugin = ThePit.getInstance();
@@ -193,7 +193,7 @@ public class Methods {
 	    }
 	    
 	    // Create or update the hologram with the new data
-	    if (!DHAPI.getHologram("top_kills").isEnabled()) {
+	    if (DHAPI.getHologram("top_kills") == null) {
 	    	DHAPI.createHologram("top_kills", originalHologramLocation, true, hologramLines);
 	    }
 	    else {

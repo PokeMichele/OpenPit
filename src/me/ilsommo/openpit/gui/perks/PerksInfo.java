@@ -1,6 +1,5 @@
 package me.ilsommo.openpit.gui.perks;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,33 +30,92 @@ public class PerksInfo implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        givePerks(event.getPlayer());
+        removePerks(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         givePerks(event.getPlayer());
     }
-
-    private void givePerks(Player player) {
+    
+    private void removePerks(Player player) {
         FileConfiguration config = YamlConfiguration.loadConfiguration(main.perksFile);
-
         List<String> availablePerks = new ArrayList<>(config.getKeys(false));
 
-        // Rimuovi i perks già presenti nel giocatore
         for (String perk : availablePerks) {
             if (config.getStringList(perk).contains(player.getName())) {
-                config.getStringList(perk).remove(player.getName());
+                List<String> playersWithPerk = config.getStringList(perk);
+                List<ItemStack> itemsToRemove = new ArrayList<>();
+
+                for (ItemStack item : player.getInventory().getContents()) {
+                    if (item != null && isSamePerkItem(item, perk)) {
+                        itemsToRemove.add(item);
+                    }
+                }
+
+                for (ItemStack item : itemsToRemove) {
+                    player.getInventory().remove(item);
+                }
+
+                playersWithPerk.remove(player.getName());
+                config.set(perk, playersWithPerk);
             }
         }
 
-        // Assegna al massimo 3 nuovi perks al giocatore
+        try {
+            config.save(main.perksFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private boolean isSamePerkItem(ItemStack item, String perk) {
+        Material material = getPerkItemMaterial(perk);
+
+        return item.getType() == material;
+    }
+
+    private Material getPerkItemMaterial(String perk) {
+        switch (perk.toLowerCase()) {
+            case "fishing rod":
+                return Material.FISHING_ROD;
+            case "golden head":
+                return Material.GOLDEN_APPLE;
+            case "lava bucket":
+                return Material.LAVA_BUCKET;
+            case "strength-chaining":
+                return Material.POTION;
+            default:
+                return Material.AIR;
+        }
+    }
+    
+    private void givePerks(Player player) {
+    	FileConfiguration config = YamlConfiguration.loadConfiguration(main.perksFile);
+        List<String> availablePerks = new ArrayList<>(config.getKeys(false));
+
+        // Remove perks already assigned to the player and ensure the player is in at most 3 lists
         for (String perk : availablePerks) {
             List<String> playersWithPerk = config.getStringList(perk);
-            if (playersWithPerk.size() < 3) {
+            if (playersWithPerk.contains(player.getName())) {
+                playersWithPerk.remove(player.getName());
+                config.set(perk, playersWithPerk); // Update the configuration
+            }
+        }
+
+        int perksGiven = 0;
+        // Assign perks to the player
+        for (String perk : availablePerks) {
+            List<String> playersWithPerk = config.getStringList(perk);
+            if (playersWithPerk.size() < 3 && !playersWithPerk.contains(player.getName())) {
                 playersWithPerk.add(player.getName());
-                config.set(perk, playersWithPerk);
+                config.set(perk, playersWithPerk); // Update the configuration
                 givePerkItem(player, perk);
+                perksGiven++;
+                if (perksGiven >= 3) {
+                    break; // Stop assigning perks once 3 perks are given
+                }
             }
         }
 
@@ -68,37 +126,44 @@ public class PerksInfo implements Listener {
         }
     }
 
-    private void givePerkItem(Player player, String perk) {
-        // Aggiungi qui il codice per assegnare l'oggetto corrispondente al perk
-        // Ad esempio, puoi dare un'istanza di ItemStack con il materiale desiderato
 
+    private void givePerkItem(Player player, String perkType) {
         Material material;
 
-        switch (perk.toLowerCase()) {
-            case "rod":
+        switch (perkType.toLowerCase()) {
+            case "fishing rod":
                 material = Material.FISHING_ROD;
                 break;
-            case "goldenhead":
+            case "golden head":
                 material = Material.GOLDEN_APPLE;
                 break;
-            case "lava":
+            case "lava bucket":
                 material = Material.LAVA_BUCKET;
                 break;
-            case "strength":
-                material = Material.POTION; // Puoi impostare il materiale corretto per la forza
+            case "strength-chaining":
+                material = Material.POTION; // Adjust this to the correct material for strength
                 break;
             default:
-                // Se il perk non corrisponde a nessuno dei casi sopra, assegna un materiale di default
+                // If the perk type doesn't match any of the cases above, assign a default material
                 material = Material.DIAMOND_SWORD;
                 break;
         }
 
         ItemStack perkItem = new ItemStack(material);
-        player.getInventory().addItem(perkItem);
+
+        // Check if player already has the perk item in inventory
+        if (!player.getInventory().contains(material)) {
+            player.getInventory().addItem(perkItem);
+        } else {
+            // Inform the player that they already have the item
+            player.sendMessage(ChatColor.RED + "You already have this perk item in your inventory!");
+        }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+    	FileConfiguration config = YamlConfiguration.loadConfiguration(main.perksFile);
+    	
         if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
@@ -119,8 +184,6 @@ public class PerksInfo implements Listener {
             if (perkType == null) {
                 return;
             }
-
-            FileConfiguration config = YamlConfiguration.loadConfiguration(main.perksFile);
 
             switch (perkType) {
                 case "Go Back":

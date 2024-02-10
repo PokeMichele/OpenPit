@@ -230,7 +230,7 @@ public class ThePit extends JavaPlugin {
         KillCounter killCounter = new KillCounter();
         killCounter.calculateAndSaveKills();
     }
-    // Metodo per salvare i livelli su levels.yml
+
     public void savePlayerLevel(UUID playerUUID, double newLevel) {
         levelsConfig.set(playerUUID.toString(), newLevel);
 
@@ -240,17 +240,17 @@ public class ThePit extends JavaPlugin {
             e.printStackTrace();
         }
     }
- // Metodo per recuperare il livello di un giocatore dal file levels.yml
+
     public double getPlayerLevel(UUID playerUUID) {
         if (levelsConfig.contains(playerUUID.toString())) {
             return levelsConfig.getDouble(playerUUID.toString());
         }
-        return 0; // Restituisce il livello 0 se il giocatore non ha un livello salvato
+        return 0;
     }
     public int getPlayerLevelToInt(UUID playerUUID) {
         if (levelsConfig.contains(playerUUID.toString())) {
             return (int) levelsConfig.getDouble(playerUUID.toString());
         }
-        return 0; // Restituisce il livello 0 se il giocatore non ha un livello salvato
+        return 0;
     }
 }
